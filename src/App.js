@@ -1,10 +1,11 @@
 import React from 'react';
 import './App.css';
 
-import magicWrapper from './Components/magicWrapper.js';
+import nosePose from './modules/nosePose/Component/nosePose.js';
 import Canvas from './Components/Canvas.js';
 
-import { configPresets } from './js/faceDetector';
+import { configPresets } from './modules/nosePose/js/faceDetector';
+console.log(configPresets.normal);
 
 function App({
   unitCirclePositionRef,
@@ -13,7 +14,9 @@ function App({
   configure,
 }) {
   function clickHandlerWidth(type) {
-    configure({ model: configPresets[type] });
+    let modelConfig = { ...configPresets[type] };
+
+    configure({ model: modelConfig });
   }
 
   function clickHandlerSpeed(speed) {
@@ -22,10 +25,11 @@ function App({
 
   return (
     <div className="App" style={{}}>
-      {/* <Canvas
-        unitPositionRef={unitPositionRef}
+      <Canvas
+        unitSquarePositionRef={unitSquarePositionRef}
+        unitCirclePositionRef={unitCirclePositionRef}
         webcamReference={webcamReference}
-      /> */}
+      />
       <button onClick={() => clickHandlerWidth('narrow')}>narrow config</button>
       <button onClick={() => clickHandlerWidth('normal')}>normal config</button>
       <button onClick={() => clickHandlerWidth('wide')}> wide config</button>
@@ -37,8 +41,8 @@ function App({
   );
 }
 
-export default magicWrapper(App, {
-  preview: { video: false, circleControl: true, squareControl: true },
-});
+// export default nosePose(App, {
+//   preview: { video: true, circleControl: true, squareControl: true },
+// });
 
-// export default magicWrapper(App);
+export default nosePose(App);

@@ -18,8 +18,7 @@ export default class FaceDetector {
   }
 
   configure(config) {
-    this.config = Object.assign(this.config, config);
-    console.log('model', this.model);
+    this.config = Object.assign({ ...configPresets.normal }, config);
   }
 
   async detectFace(video) {
@@ -30,6 +29,7 @@ export default class FaceDetector {
     return {
       ...predictions[0],
       facingDirection: this.facingDirection(predictions),
+      __predictionConfig: this.config,
     };
   }
 
@@ -52,11 +52,12 @@ export default class FaceDetector {
       coords,
       outer_bounding
     );
+
     return {
       direction: this.__getDirection(coords, central_bounding),
-      vector: [x, y],
-      vector_normalized_square: vector_normalized, //square
-      vector_normalized_circle: this.__normalizeRect2Circ(vector_normalized), //circle
+      vector: [x, y], //absolute value in face bounding rect
+      vector_normalized_square: vector_normalized, //normalized square
+      vector_normalized_circle: this.__normalizeRect2Circ(vector_normalized), //normalized circle
     };
   }
 
@@ -88,7 +89,7 @@ export default class FaceDetector {
     return norm;
   }
 
-  //2d plane [-1,1] coordinates => unit circle r=1.
+  //2d plane coordinates => unit circle r=1.
   // note: not a map but simply limits coordinates outside of radius to on circle.
   __normalizeRect2Circ(coords, radius = 1) {
     let [x, y] = coords;
@@ -98,12 +99,14 @@ export default class FaceDetector {
     if (Math.sqrt(x ** 2 + y ** 2) <= radius) {
       return [x, y];
     }
+
     const theta = Math.atan(y / x);
     const y_b = y_sign * Math.abs(radius * Math.sin(theta));
     const x_b = x_sign * Math.abs(radius * Math.cos(theta));
     return [x_b, y_b];
   }
 
+  // returns "up", "down","left","right"
   __getDirection(coords, central_bounding) {
     const [x, y] = coords;
 
@@ -153,7 +156,7 @@ const configPresets = {
     outer_bounding: { x: [-20, 20], y: [-15, 10] },
   },
   normal: {
-    central_bounding: { x: [-20, 20], y: [-30, 30] },
+    central_bounding: { x: [-20, 20], y: [-30, 15] },
     outer_bounding: { x: [-50, 50], y: [-35, 20] },
   },
   wide: {

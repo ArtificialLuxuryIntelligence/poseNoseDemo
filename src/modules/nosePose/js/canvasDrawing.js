@@ -1,7 +1,7 @@
 const drawCircleControl = function (
   coords,
   ctx,
-  options = { inputRadius: 1, outputRadius: 50, center: [50, 100] }
+  options = { inputRadius: 1, outputRadius: 50, center: [70, 100] }
 ) {
   const [x, y] = coords;
   const scaleFactor = options.outputRadius / options.inputRadius;
@@ -27,7 +27,7 @@ const drawSquareControl = function (
   options = {
     inputDimensions: [1, 1],
     outputDimensions: [100, 100],
-    topLeft: [0, 200],
+    topLeft: [20, 200],
   }
 ) {
   const { inputDimensions, outputDimensions, topLeft } = options;
@@ -58,7 +58,8 @@ const drawSquareControl = function (
   ctx.fill();
 };
 
-const drawFace = (prediction, ctx) => {
+const drawBoundingFace = (prediction, ctx) => {
+  //   console.log(prediction.__predictionConfig);
   const landmarks = prediction.landmarks;
   // Draw Dots
   for (let i = 0; i < landmarks.length; i++) {
@@ -76,12 +77,46 @@ const drawFace = (prediction, ctx) => {
     ctx.fill();
   }
   // Draw bounding box;
-
-  const { topLeft, width, height } = getDimensions(prediction);
-
+  const { topLeft, width, height, center } = getDimensions(prediction);
   ctx.strokeStyle = 'pink';
   ctx.beginPath();
   ctx.rect(topLeft[0], topLeft[1], width, height);
+  ctx.stroke();
+
+  // Draw bounding configuration boxes
+  const { central_bounding, outer_bounding } = prediction.__predictionConfig;
+  // Draw central bounding box;
+  const {
+    topLeft: topLeft_c,
+    width: width_c,
+    height: height_c,
+  } = getBoundingDimensions(central_bounding);
+
+  ctx.strokeStyle = 'green';
+  ctx.beginPath();
+  ctx.rect(
+    center[0] + topLeft_c[0],
+    center[1] + topLeft_c[1],
+    width_c,
+    height_c
+  );
+  ctx.stroke();
+
+  // Draw outer bounding box
+  const {
+    topLeft: topLeft_o,
+    width: width_o,
+    height: height_o,
+  } = getBoundingDimensions(outer_bounding);
+
+  ctx.strokeStyle = 'purple';
+  ctx.beginPath();
+  ctx.rect(
+    center[0] + topLeft_o[0],
+    center[1] + topLeft_o[1],
+    width_o,
+    height_o
+  );
   ctx.stroke();
 };
 
@@ -102,4 +137,14 @@ function getDimensions(prediction) {
   return { topLeft, bottomRight, width, height, center };
 }
 
-export { clearCanvas, drawCircleControl, drawSquareControl, drawFace };
+function getBoundingDimensions(bounding) {
+  let { x: bounding_x, y: bounding_y } = bounding;
+  let topLeft = [bounding_x[0], bounding_y[0]];
+  let height = Math.abs(bounding_y[0]) + Math.abs(bounding_y[1]);
+  let width = Math.abs(bounding_x[0]) + Math.abs(bounding_x[1]);
+
+  console.log(topLeft);
+  return { topLeft, width, height };
+}
+
+export { clearCanvas, drawCircleControl, drawSquareControl, drawBoundingFace };

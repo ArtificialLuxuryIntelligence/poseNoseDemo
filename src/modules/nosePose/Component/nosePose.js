@@ -1,13 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
-import * as tf from '@tensorflow/tfjs';
-import * as blazeface from '@tensorflow-models/blazeface';
 
 import {
   clearCanvas,
   drawCircleControl,
   drawSquareControl,
-  drawFace,
-} from './../js/canvasDrawing';
+  drawBoundingFace,
+} from '../js/canvasDrawing';
 import FaceDetector from '../js/faceDetector.js';
 import Webcam from 'react-webcam';
 
@@ -15,10 +13,10 @@ import Webcam from 'react-webcam';
 // note: wrapper includes hidden video element which needs to be in current view area (even if hidden)
 //
 
-const INTERVAL = 200;
+const INTERVAL = 100;
 const DEFAULT_SPEED = 0.05;
 
-export default function magicWrapper(WrappedComponent, options) {
+export default function nosePose(WrappedComponent, options) {
   options = Object.assign(
     {
       preview: {
@@ -115,30 +113,33 @@ export default function magicWrapper(WrappedComponent, options) {
       loopDectection();
 
       return () => {
-        console.log('clearing interval');
+        // console.log('clearing interval');
         clearInterval(intervalTimerRef.current);
       };
     }, [tfModel]);
 
-    // start animation loop
+    // start animation frame loop
+    // used for interpolating model predictions and rendering preview
     useEffect(() => {
       let preview = Object.values(options.preview).some((v) => v === true);
       setPreview(preview);
+      // console.log('rerending animation');
 
-      console.log('rerending animation');
       const animationLoop = () => {
         let prevCirclePos = [0, 0];
         let prevSquarePos = [0, 0];
 
         const loop = () => {
           if (currentPredictionRef.current) {
-            // update smooth positions
+            // console.log(currentPredictionRef.current);
+            // -------------------interpolate
             let actualCirclePos =
               currentPredictionRef.current.facingDirection
                 .vector_normalized_circle;
             let actualSquarePos =
               currentPredictionRef.current.facingDirection
                 .vector_normalized_square;
+
             //circle position
             let newCirclePos = stepToward(
               prevCirclePos,
@@ -156,7 +157,7 @@ export default function magicWrapper(WrappedComponent, options) {
             prevSquarePos = newSquarePos;
             unitSquarePositionRef.current = prevSquarePos;
 
-            //preview rendering on canvas
+            // -------------------render preview
             if (preview) {
               const ctx = canvasReference.current.getContext('2d');
               clearCanvas(ctx);
@@ -168,7 +169,7 @@ export default function magicWrapper(WrappedComponent, options) {
                 drawSquareControl(prevSquarePos, ctx);
 
               options.preview.video &&
-                drawFace(currentPredictionRef.current, ctx);
+                drawBoundingFace(currentPredictionRef.current, ctx);
             }
           }
 
@@ -179,30 +180,18 @@ export default function magicWrapper(WrappedComponent, options) {
       animationLoop();
 
       return () => {
-        console.log('clearing animation frame');
+        // console.log('clearing animation frame');
         cancelAnimationFrame(animationFrameRef.current);
       };
     }, [renderConfig]);
 
-    useEffect(() => {
-      console.log('mounting');
-      return console.log('unmounting');
-    }, []);
+    // useEffect(() => {
+    // console.log('mounting');
+    // return console.log('unmounting');
+    // }, []);
 
     return (
       <>
-        <WrappedComponent
-          unitCirclePositionRef={unitCirclePositionRef}
-          unitSquarePositionRef={unitSquarePositionRef}
-          webcamReference={webcamReference}
-          configure={configure}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            visibility: 'hidden',
-          }}
-        />
         <div
           className="magic-wrapper"
           style={{
@@ -240,13 +229,24 @@ export default function magicWrapper(WrappedComponent, options) {
               left: 0,
               right: 0,
               textAlign: 'center',
-              zindex: 9,
+              zindex: 999,
               width: 720,
               height: 500,
               transform: 'scale(-1, 1)',
             }}
           />
         </div>
+        <WrappedComponent
+          unitCirclePositionRef={unitCirclePositionRef}
+          unitSquarePositionRef={unitSquarePositionRef}
+          configure={configure}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            visibility: 'hidden',
+          }}
+        />
       </>
     );
   }
@@ -258,11 +258,10 @@ export default function magicWrapper(WrappedComponent, options) {
 //   /// -----------------------------------------------------------------------------------
 
 //   // step size range [0,1] (percent of total dist)
-function stepToward(prevPos, actualCirclePos, stepSize = 0.1) {
-  // console.log(prevPos, actualCirclePos);
+function stepToward(prevPos, actualPos, stepSize = 0.1) {
   let x, y;
   let [x1, y1] = [...prevPos];
-  let [x2, y2] = [...actualCirclePos];
+  let [x2, y2] = [...actualPos];
 
   let d_x = x2 - x1;
   let d_y = y2 - y1;

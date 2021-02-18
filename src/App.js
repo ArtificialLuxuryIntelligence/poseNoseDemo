@@ -41,8 +41,8 @@ function App({
   );
 }
 
-// export default nosePose(App, {
-//   preview: { video: true, circleControl: true, squareControl: true },
-// });
+export default nosePose(App, {
+  preview: { video: false, circleControl: false, squareControl: false },
+});
 
-export default nosePose(App);
+// export default nosePose(App);

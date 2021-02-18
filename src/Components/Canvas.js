@@ -1,9 +1,10 @@
 import React, { useRef, useEffect, useState } from 'react';
 
+const STOPPING_RADIUS = 0.15;
+
 export default function Canvas({
   unitCirclePositionRef,
   unitSquarePositionRef,
-  webcamReference,
 }) {
   const canvasRef = useRef(null);
   const animationFrameRef = useRef(null);
@@ -30,8 +31,14 @@ export default function Canvas({
 
         let vector = unitCirclePositionRef.current;
         if (vector) {
-          position = updatePosition(vector, position, canvasDimensions, speed);
-          updateCanvas(position, ctx);
+          position = updatePosition(
+            vector,
+            position,
+            STOPPING_RADIUS,
+            canvasDimensions,
+            speed
+          );
+          updateCanvas(position, vector, ctx);
         }
 
         animationFrameRef.current = requestAnimationFrame(loop);
@@ -66,14 +73,24 @@ export default function Canvas({
   );
 }
 
-const updatePosition = (vector, prevPos, canvasDimensions, speed) => {
+const updatePosition = (
+  vector,
+  prevPos,
+  stoppingRadius,
+  canvasDimensions,
+  speed
+) => {
   const [width, height] = canvasDimensions;
   const [x, y] = vector;
   const [x_p, y_p] = prevPos;
   let x_new = -x * speed + x_p;
   let y_new = -y * speed + y_p;
 
-  //boundary conditions
+  let r = Math.sqrt(vector[0] ** 2 + vector[1] ** 2);
+  if (r < stoppingRadius) {
+    return prevPos;
+  }
+  //canvas boundary conditions
   if (x_new >= width) {
     x_new = 0;
   } else if (x_new <= 0) {
@@ -87,14 +104,20 @@ const updatePosition = (vector, prevPos, canvasDimensions, speed) => {
   return [x_new, y_new];
 };
 
-const updateCanvas = (position, ctx) => {
+const updateCanvas = (position, vector, ctx) => {
   const [x, y] = position;
   // console.log(x);
 
-  ctx.beginPath();
-  ctx.arc(x, y, 10, 0, 2 * Math.PI);
-  ctx.fillStyle = 'purple';
-  ctx.fill();
+  // ctx.beginPath();
+  // ctx.arc(x, y, 10, 0, 2 * Math.PI);
+  // ctx.fillStyle = 'purple';
+  // ctx.fill();
+
+  drawJoystick(vector, ctx, {
+    inputRadius: 1,
+    outputRadius: 50,
+    center: position,
+  });
 };
 
 const drawJoystick = (

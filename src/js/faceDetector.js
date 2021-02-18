@@ -2,26 +2,26 @@ import * as tf from '@tensorflow/tfjs';
 import * as blazeface from '@tensorflow-models/blazeface';
 
 export default class FaceDetector {
-  constructor(
-    options = {
-      // TO DO make this as a percentage of something (bounding box?)
-      // number with respect to central point of facebounding
-      //nose position
-      central_bounding: { x: [-20, 20], y: [-30, 30] }, // within which no direction is registered
-      normalizing_range: { x: [-100, 100], y: [-100, 100] }, // point at which normalized direction is 1. (range: [0,1])
-    }
-  ) {
+  constructor() {
     this.model = null;
-    this.options = options;
+    this.config = configPresets.normal;
   }
 
+  // configure
+
   async load() {
-    this.model = await blazeface.load();
+    this.model = await blazeface.load({ maxFaces: 1 });
 
     return Object.assign(this.model, {
       detectFace: this.detectFace.bind(this),
     });
   }
+
+  configure(config) {
+    this.config = Object.assign(this.config, config);
+    console.log('model', this.model);
+  }
+
   async detectFace(video) {
     let predictions = await this.model.estimateFaces(video);
     if (!predictions.length) {
@@ -37,56 +37,31 @@ export default class FaceDetector {
     if (!predictions[0]) {
       return false;
     }
-    const { center } = this.__getDimensions(predictions[0]);
+
+    let central_bounding = this.config.central_bounding;
+    let outer_bounding = this.config.outer_bounding;
+
+    // get predictions data
+    const { center } = this.__getPredictionBoundingDimensions(predictions[0]);
     const nose = predictions[0].landmarks[2];
     const x = center[0] - nose[0];
     const y = center[1] - nose[1];
+    const coords = [x, y];
 
-    let direction;
-
-    if (x <= 20 && x >= -20 && y <= 30 && y >= -30) {
-      direction = 'center';
-    } else if (x < 20 && x > -20) {
-      if (y > 30) {
-        direction = 'up';
-      } else if (y < -30) {
-        direction = 'down';
-      }
-    } else if (y < 30 && y > -30) {
-      if (x > 30) {
-        direction = 'right';
-      } else if (x < -30) {
-        direction = 'left';
-      }
-    }
-    let x_normalized = this.__normalizeInRange(x, [-50, 50], [-1, 1]);
-    let y_normalized = this.__normalizeInRange(y, [-35, 20], [-1, 1]);
-
-    // NOTE : return these as functions with options?
-    // i.e.
-    // function getDirection(
-    //   options = { x_bounds: [-50, 50], y_bounds: [-35, 20] }
-    // ) {
-    //   return 'up';
-    // }
-    // {
-    //     getDirection, getVector, getVectorNormalized, getVectorNormalizedCircle;
-    // }
-    // etc
-    ///
+    const vector_normalized = this.__getVectorNormalized(
+      coords,
+      outer_bounding
+    );
     return {
-      direction,
+      direction: this.__getDirection(coords, central_bounding),
       vector: [x, y],
-      vector_normalized: [x_normalized, y_normalized], //square
-      vector_normalized_circle: this.__confineToCircle([
-        x_normalized,
-        y_normalized,
-      ]), //circle
+      vector_normalized_square: vector_normalized, //square
+      vector_normalized_circle: this.__normalizeRect2Circ(vector_normalized), //circle
     };
   }
 
-  // Helper
-  __getDimensions(prediction) {
+  // Helpers
+  __getPredictionBoundingDimensions(prediction) {
     const topLeft = prediction.topLeft;
     const bottomRight = prediction.bottomRight;
     const width = bottomRight[0] - topLeft[0];
@@ -115,7 +90,7 @@ export default class FaceDetector {
 
   //2d plane [-1,1] coordinates => unit circle r=1.
   // note: not a map but simply limits coordinates outside of radius to on circle.
-  __confineToCircle(coords, radius = 1) {
+  __normalizeRect2Circ(coords, radius = 1) {
     let [x, y] = coords;
     let x_sign = x > 0 ? 1 : -1;
     let y_sign = y > 0 ? 1 : -1;
@@ -128,4 +103,63 @@ export default class FaceDetector {
     const x_b = x_sign * Math.abs(radius * Math.cos(theta));
     return [x_b, y_b];
   }
+
+  __getDirection(coords, central_bounding) {
+    const [x, y] = coords;
+
+    let direction;
+    // get bounding config
+    let bounding_x = central_bounding.x;
+    let bounding_y = central_bounding.y;
+    let [x_min, x_max] = bounding_x;
+    let [y_min, y_max] = bounding_y;
+
+    // estimate direction
+    if (x <= x_max && x >= x_min && y <= y_max && y >= y_min) {
+      direction = 'center';
+    } else if (x < x_max && x > x_min) {
+      if (y > y_max) {
+        direction = 'up';
+      } else if (y < y_min) {
+        direction = 'down';
+      }
+    } else if (y < y_max && y > y_min) {
+      if (x > x_max) {
+        direction = 'right';
+      } else if (x < x_min) {
+        direction = 'left';
+      }
+    }
+    return direction;
+  }
+  __getVectorNormalized(coords, outer_bounding) {
+    const [x, y] = coords;
+    // get bounding config
+    let bounding_x = outer_bounding.x;
+    let bounding_y = outer_bounding.y;
+    let [x_min, x_max] = bounding_x;
+    let [y_min, y_max] = bounding_y;
+
+    let x_normalized = this.__normalizeInRange(x, [x_min, x_max], [-1, 1]);
+    let y_normalized = this.__normalizeInRange(y, [y_min, y_max], [-1, 1]);
+
+    return [x_normalized, y_normalized];
+  }
 }
+
+const configPresets = {
+  narrow: {
+    central_bounding: { x: [-20, 20], y: [-30, 30] },
+    outer_bounding: { x: [-20, 20], y: [-15, 10] },
+  },
+  normal: {
+    central_bounding: { x: [-20, 20], y: [-30, 30] },
+    outer_bounding: { x: [-50, 50], y: [-35, 20] },
+  },
+  wide: {
+    central_bounding: { x: [-20, 20], y: [-30, 30] },
+    outer_bounding: { x: [-100, 100], y: [-65, 50] },
+  },
+};
+
+export { configPresets };

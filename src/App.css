@@ -1,9 +1,13 @@
 .App {
-  text-align: center;
+  /* text-align: center;
   min-height: 100vh;
   background-color: darkslategrey;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: center; */
+}
+
+button {
+  display: block;
 }

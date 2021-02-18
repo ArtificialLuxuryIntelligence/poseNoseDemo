@@ -62,7 +62,18 @@ export default class FaceDetector {
     let x_normalized = this.__normalizeInRange(x, [-50, 50], [-1, 1]);
     let y_normalized = this.__normalizeInRange(y, [-35, 20], [-1, 1]);
 
-    // NOTE : vector is comp heavy? so make it a function...?
+    // NOTE : return these as functions with options?
+    // i.e.
+    // function getDirection(
+    //   options = { x_bounds: [-50, 50], y_bounds: [-35, 20] }
+    // ) {
+    //   return 'up';
+    // }
+    // {
+    //     getDirection, getVector, getVectorNormalized, getVectorNormalizedCircle;
+    // }
+    // etc
+    ///
     return {
       direction,
       vector: [x, y],

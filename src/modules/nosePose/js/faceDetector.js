@@ -1,57 +1,63 @@
 import * as tf from '@tensorflow/tfjs';
 import * as blazeface from '@tensorflow-models/blazeface';
 
+// Add custom property to existing face detection model (blazeface)
+
 export default class FaceDetector {
   constructor() {
     this.model = null;
-    this.config = configPresets.normal;
   }
-
-  // configure
 
   async load() {
     this.model = await blazeface.load({ maxFaces: 1 });
 
+    // add nosePose object to blazeface model
     return Object.assign(this.model, {
-      detectFace: this.detectFace.bind(this),
+      nosePose: new FaceVectorDetector(this.model),
     });
   }
+}
 
+// Get a vector from face landmarks
+
+class FaceVectorDetector {
+  constructor(model) {
+    this.model = model;
+    this.config = configPresets.normal;
+  }
   configure(config) {
     this.config = Object.assign({ ...configPresets.normal }, config);
   }
-
-  async detectFace(video) {
+  async detect(video) {
+    // Get predictions from model
     let predictions = await this.model.estimateFaces(video);
     if (!predictions.length) {
       return false;
     }
+    // Extract relevant data
+    const { nose, center } = this.__getPredictionData(predictions[0]);
 
-    return {
-      ...predictions[0],
-      facingDirection: this.facingDirection(predictions),
-      __predictionConfig: this.config,
-    };
+    let vectors = this.__getNosePointVectors(nose, center);
+    let config = this.config;
+
+    return { vectors, predictions: predictions[0], config };
   }
 
-  facingDirection(predictions) {
-    if (!predictions[0]) {
-      return false;
-    }
+  // configure(config) {
+  //   this.config = Object.assign({ ...configPresets.normal }, config);
+  // }
 
+  __getNosePointVectors(nose, center) {
     let central_bounding = this.config.central_bounding;
     let outer_bounding = this.config.outer_bounding;
 
-    // get predictions data
-    const { center } = this.__getPredictionBoundingDimensions(predictions[0]);
-    const nose = predictions[0].landmarks[2];
     const x = center[0] - nose[0];
     const y = center[1] - nose[1];
     const coords = [x, y];
 
     // -----------------------------------------------------------
 
-    const direction = this.__getDirection(coords, central_bounding);
+    const direction_word = this.__getDirection(coords, central_bounding);
     const vector = [x, y];
     const vector_normalized_square = this.__getVectorNormalized(
       coords,
@@ -62,22 +68,24 @@ export default class FaceDetector {
     );
 
     return {
-      direction,
+      direction_word,
       vector, //absolute value in face bounding rect
-      vector_normalized_square, //normalized square
-      vector_normalized_circle, //normalized circle
+      vector_normalized_square, //normalized square [0,1]x [0,1]y
+      vector_normalized_circle, //normalized circle [0,1]r
     };
   }
 
   // Helpers
-  __getPredictionBoundingDimensions(prediction) {
+  __getPredictionData(prediction) {
     const topLeft = prediction.topLeft;
     const bottomRight = prediction.bottomRight;
     const width = bottomRight[0] - topLeft[0];
     const height = bottomRight[1] - topLeft[1];
     const center = [topLeft[0] + width / 2, topLeft[1] + height / 2];
 
-    return { topLeft, bottomRight, width, height, center };
+    const nose = prediction.landmarks[2];
+
+    return { topLeft, bottomRight, width, height, center, nose };
   }
 
   // Where a value lies in a given range. Normalized to a range(range2).

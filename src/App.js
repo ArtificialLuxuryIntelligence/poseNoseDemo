@@ -35,7 +35,7 @@ function App({ unitCirclePositionRef, unitSquarePositionRef, configure }) {
 }
 
 export default nosePose(App, {
-  preview: { video: true, circleControl: false, squareControl: false },
+  preview: { video: true, circleControl: true, squareControl: true },
 });
 
 // export default nosePose(App);

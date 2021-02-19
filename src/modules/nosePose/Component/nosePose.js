@@ -13,11 +13,12 @@ import Webcam from 'react-webcam';
 // note: wrapper includes hidden video element which needs to be in current view area (even if hidden)
 //
 
-// const INTERVAL = 1000 / 60;
-const INTERVAL = 80;
-const DEFAULT_SPEED = 0.05;
+const INTERVAL = 1000 / 40; // 40fps
+// const INTERVAL = 80;
+const DEFAULT_SPEED = 0.1; // should be related to frame rate
 
 export default function nosePose(WrappedComponent, options) {
+  // render configuration:
   options = Object.assign(
     {
       preview: {
@@ -26,7 +27,7 @@ export default function nosePose(WrappedComponent, options) {
         squareControl: false,
       },
       speed: {
-        value: 0.02,
+        value: DEFAULT_SPEED,
       },
     },
     options
@@ -34,11 +35,9 @@ export default function nosePose(WrappedComponent, options) {
 
   function AddDetection() {
     const [tfModel, setModelLoaded] = useState(null);
-    const [modelConfig, setModelConfig] = useState(null);
+    const [nosePoseConfig, setNosePoseConfig] = useState(null);
     const [renderConfig, setRenderConfig] = useState(null);
-
     const [preview, setPreview] = useState(true);
-
     const webcamReference = useRef(null);
     const canvasReference = useRef(null);
     const intervalTimerRef = useRef(null);
@@ -47,6 +46,7 @@ export default function nosePose(WrappedComponent, options) {
     const unitCirclePositionRef = useRef(null);
     const unitSquarePositionRef = useRef(null);
 
+    // Sets currentPredictionRef to nosePose predictions
     const detectFace = async (model) => {
       if (!model) {
         return;
@@ -70,18 +70,34 @@ export default function nosePose(WrappedComponent, options) {
         canvasReference.current.height = videoHeight;
 
         // Make Detections
-        const prediction = await model.detectFace(video);
+        const prediction = await model.nosePose.detect(video);
         // console.log(prediction);
 
         // Set prediction to Ref
         currentPredictionRef.current = prediction;
       }
     };
-    // configure model options
+    // configuration options
+    // e.g. {
+    //   model:{
+    //     central_bounding: { x: [-20, 20], y: [-30, 30] },
+    //     outer_bounding: { x: [-20, 20], y: [-15, 10] },
+    //   },
+    //   render{
+    //     speed: 0.1
+    //   }
+    // }
     const configure = (config) => {
-      setModelConfig((prev) => ({ ...prev, ...config.model }));
+      // set central_bounding and outer_bounding
+      setNosePoseConfig((prev) => ({ ...prev, ...config.model }));
+      // set cursor speed
       setRenderConfig((prev) => ({ ...prev, ...config.render }));
     };
+
+    // update nosePoseConfig
+    useEffect(() => {
+      tfModel && tfModel.nosePose.configure(nosePoseConfig);
+    }, [tfModel, nosePoseConfig]);
 
     // toggle preview on load
     useEffect(() => {
@@ -89,18 +105,17 @@ export default function nosePose(WrappedComponent, options) {
       setPreview(preview);
     }, []);
 
-    // load and configure model
+    // load  model
     useEffect(() => {
       async function loadModel() {
         console.log('loading model');
         let faceDetector = new FaceDetector();
-        faceDetector.configure(modelConfig); //configure bounding options
         let model = await faceDetector.load();
         console.log('model loaded');
         setModelLoaded(model);
       }
       loadModel();
-    }, [modelConfig]);
+    }, []);
 
     // start model detection loop
     useEffect(() => {
@@ -138,11 +153,9 @@ export default function nosePose(WrappedComponent, options) {
             // console.log(currentPredictionRef.current);
             // -------------------interpolate
             let actualCirclePos =
-              currentPredictionRef.current.facingDirection
-                .vector_normalized_circle;
+              currentPredictionRef.current.vectors.vector_normalized_circle;
             let actualSquarePos =
-              currentPredictionRef.current.facingDirection
-                .vector_normalized_square;
+              currentPredictionRef.current.vectors.vector_normalized_square;
 
             //circle position
             let newCirclePos = stepToward(
@@ -152,6 +165,7 @@ export default function nosePose(WrappedComponent, options) {
             );
             prevCirclePos = newCirclePos;
             unitCirclePositionRef.current = prevCirclePos;
+
             // square position
             let newSquarePos = stepToward(
               prevSquarePos,
@@ -172,8 +186,18 @@ export default function nosePose(WrappedComponent, options) {
               options.preview.squareControl &&
                 drawSquareControl(prevSquarePos, ctx);
 
+              let { predictions, config } = currentPredictionRef.current;
+
+              let { central_bounding, outer_bounding } = config;
+
+              // let faceBounding = currentPrectionRef.current;
               options.preview.video &&
-                drawBoundingFace(currentPredictionRef.current, ctx);
+                drawBoundingFace(
+                  central_bounding,
+                  outer_bounding,
+                  predictions,
+                  ctx
+                );
             }
           }
 
@@ -188,11 +212,6 @@ export default function nosePose(WrappedComponent, options) {
         cancelAnimationFrame(animationFrameRef.current);
       };
     }, [renderConfig]);
-
-    // useEffect(() => {
-    // console.log('mounting');
-    // return console.log('unmounting');
-    // }, []);
 
     return (
       <>

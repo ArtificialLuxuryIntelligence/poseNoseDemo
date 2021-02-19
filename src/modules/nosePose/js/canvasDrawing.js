@@ -58,7 +58,13 @@ const drawSquareControl = function (
   ctx.fill();
 };
 
-const drawBoundingFace = (prediction, ctx) => {
+const drawBoundingFace = (
+  central_bounding,
+  outer_bounding,
+  prediction,
+  ctx
+) => {
+  
   //   console.log(prediction.__predictionConfig);
   const landmarks = prediction.landmarks;
   // Draw Dots
@@ -76,6 +82,7 @@ const drawBoundingFace = (prediction, ctx) => {
     // ctx.arc(x, y, 2 /* radius */, 0, 3 * Math.PI);
     ctx.fill();
   }
+
   // Draw bounding box;
   const { topLeft, width, height, center } = getDimensions(prediction);
   ctx.strokeStyle = 'pink';
@@ -84,7 +91,7 @@ const drawBoundingFace = (prediction, ctx) => {
   ctx.stroke();
 
   // Draw bounding configuration boxes
-  const { central_bounding, outer_bounding } = prediction.__predictionConfig;
+  // const { central_bounding, outer_bounding } = prediction.__predictionConfig;
   // Draw central bounding box;
   const {
     topLeft: topLeft_c,

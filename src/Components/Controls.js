@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Slider from 'react-input-slider';
 
-export default function Controls({ configure, speed, setSpeed }) {
+export default function Controls({
+  configure,
+  speed,
+  setSpeed,
+  stoppingRatio,
+  setStoppingRatio,
+}) {
   const useHandleChange = (initial) => {
     const [value, setValue] = useState(initial);
     const setChange = useCallback((event) => {
@@ -101,25 +107,40 @@ export default function Controls({ configure, speed, setSpeed }) {
       <label>responsiveness</label>
 
       <Slider
-        onChange={({ x }) => setResponsiveness(x)}
+        onChange={({ x }) => setResponsiveness(parseFloat(x.toFixed(2)))}
         x={responsiveness}
         xstep={0.005}
         xmin={0}
         xmax={1}
         id="responsiveness"
       />
+
       <label>speed</label>
 
       <Slider
         onChange={({ x }) => {
           console.log(x);
-          setSpeed(parseFloat(x));
+          setSpeed(parseFloat(parseFloat(x.toFixed(2))));
         }}
         x={speed}
         xstep={0.1}
         xmin={1}
         xmax={30}
         id="speed"
+      />
+
+      <label>stopping ratio</label>
+
+      <Slider
+        onChange={({ x }) => {
+          console.log(x);
+          setStoppingRatio(parseFloat(x.toFixed(2)));
+        }}
+        x={stoppingRatio}
+        xstep={0.05}
+        xmin={0}
+        xmax={1}
+        id="stopping-ratiox"
       />
     </div>
   );

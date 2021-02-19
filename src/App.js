@@ -10,6 +10,7 @@ console.log(configPresets.normal);
 
 function App({ unitCirclePositionRef, unitSquarePositionRef, configure }) {
   const [speed, setSpeed] = useState(6);
+  const [stoppingRatio, setStoppingRatio] = useState(0.2);
 
   return (
     <div className="App" style={{}}>
@@ -17,8 +18,15 @@ function App({ unitCirclePositionRef, unitSquarePositionRef, configure }) {
         unitSquarePositionRef={unitSquarePositionRef}
         unitCirclePositionRef={unitCirclePositionRef}
         speed={speed}
+        stoppingRatio={stoppingRatio}
       />
-      <Controls configure={configure} speed={speed} setSpeed={setSpeed} />
+      <Controls
+        configure={configure}
+        speed={speed}
+        setSpeed={setSpeed}
+        stoppingRatio={stoppingRatio}
+        setStoppingRatio={setStoppingRatio}
+      />
 
       {/* <button onClick={() => clickHandlerWidth('narrow')}>narrow config</button>
       <button onClick={() => clickHandlerWidth('normal')}>normal config</button>

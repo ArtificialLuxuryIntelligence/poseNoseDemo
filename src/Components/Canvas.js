@@ -1,17 +1,19 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-const STOPPING_RATIO = 0.2; // area within which to no movement
+// const stoppingRatio = 0.2; // area within which to no movement
 
 export default function Canvas({
   unitCirclePositionRef,
   unitSquarePositionRef,
   speed,
+  stoppingRatio,
 }) {
   const canvasRef = useRef(null);
   const animationFrameRef = useRef(null);
 
   useEffect(() => {
     const animationLoop = () => {
+      // console.log(stoppingRatio);
       const ctx = canvasRef.current.getContext('2d');
       canvasRef.current.width = window.innerWidth;
       canvasRef.current.height = window.innerHeight;
@@ -23,8 +25,6 @@ export default function Canvas({
       let canvasDimensions = [canvasWidth, canvasHeight];
 
       const loop = () => {
-        // console.log(speed);
-
         // Set canvas width
         canvasRef.current.width = window.innerWidth;
         canvasRef.current.height = window.innerHeight;
@@ -36,11 +36,11 @@ export default function Canvas({
           position = updatePosition(
             vector,
             position,
-            STOPPING_RATIO,
+            stoppingRatio,
             canvasDimensions,
             speed
           );
-          updateCanvas(position, vector, ctx);
+          updateCanvas(position, vector, stoppingRatio, ctx);
         }
 
         animationFrameRef.current = requestAnimationFrame(loop);
@@ -54,7 +54,7 @@ export default function Canvas({
       console.log('clearing animation frame');
       cancelAnimationFrame(animationFrameRef.current);
     };
-  }, [unitCirclePositionRef, unitSquarePositionRef, speed]);
+  }, [unitCirclePositionRef, unitSquarePositionRef, speed, stoppingRatio]);
 
   return (
     <canvas
@@ -78,7 +78,7 @@ export default function Canvas({
 const updatePosition = (
   vector,
   prevPos,
-  stoppingRadius,
+  stoppingRatio,
   canvasDimensions,
   speed
 ) => {
@@ -89,7 +89,7 @@ const updatePosition = (
   let y_new = -y * speed + y_p;
 
   let r = Math.sqrt(vector[0] ** 2 + vector[1] ** 2);
-  if (r < stoppingRadius) {
+  if (r < stoppingRatio) {
     return prevPos;
   }
   //canvas boundary conditions
@@ -106,8 +106,10 @@ const updatePosition = (
   return [x_new, y_new];
 };
 
-const updateCanvas = (position, vector, ctx) => {
+const updateCanvas = (position, vector, stoppingRatio, ctx) => {
   const [x, y] = position;
+
+  // Render generic circle cursor
   // console.log(x);
 
   // ctx.beginPath();
@@ -115,22 +117,29 @@ const updateCanvas = (position, vector, ctx) => {
   // ctx.fillStyle = 'purple';
   // ctx.fill();
 
+  // Render fancy joystick 'cursor'
   drawJoystick(vector, ctx, {
     inputRadius: 1,
     outputRadius: 50,
     center: position,
+    stoppingRatio,
   });
 };
 
 const drawJoystick = (
   vector,
   ctx,
-  options = { inputRadius: 1, outputRadius: 100, center: [300, 300] }
+  options = {
+    inputRadius: 1,
+    outputRadius: 100,
+    center: [300, 300],
+    stoppingRatio: 0,
+  }
 ) => {
   const [x, y] = vector;
   const scaleFactor = options.outputRadius / options.inputRadius;
   const [c_x, c_y] = options.center;
-  const { outputRadius: r } = options;
+  const { outputRadius: r, stoppingRatio } = options;
   let x_j = c_x - x * scaleFactor;
   let y_j = c_y - y * scaleFactor;
 
@@ -140,7 +149,7 @@ const drawJoystick = (
   ctx.fill();
 
   ctx.beginPath();
-  ctx.arc(c_x, c_y, STOPPING_RATIO * r, 0, 2 * Math.PI);
+  ctx.arc(c_x, c_y, stoppingRatio * r, 0, 2 * Math.PI);
   ctx.fillStyle = 'blue';
   ctx.fill();
 

@@ -116,8 +116,6 @@ const drawBoundingFace = (
     height: height_o,
   } = getBoundingDimensions(outer_bounding);
 
-  console.log(topLeft_o);
-
   ctx.strokeStyle = 'purple';
   ctx.beginPath();
   ctx.rect(

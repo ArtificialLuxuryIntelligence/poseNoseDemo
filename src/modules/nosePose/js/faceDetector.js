@@ -26,6 +26,7 @@ export default class FaceDetector {
     if (!predictions.length) {
       return false;
     }
+
     return {
       ...predictions[0],
       facingDirection: this.facingDirection(predictions),
@@ -48,16 +49,23 @@ export default class FaceDetector {
     const y = center[1] - nose[1];
     const coords = [x, y];
 
-    const vector_normalized = this.__getVectorNormalized(
+    // -----------------------------------------------------------
+
+    const direction = this.__getDirection(coords, central_bounding);
+    const vector = [x, y];
+    const vector_normalized_square = this.__getVectorNormalized(
       coords,
       outer_bounding
     );
+    const vector_normalized_circle = this.__normalizeRect2Circ(
+      vector_normalized_square
+    );
 
     return {
-      direction: this.__getDirection(coords, central_bounding),
-      vector: [x, y], //absolute value in face bounding rect
-      vector_normalized_square: vector_normalized, //normalized square
-      vector_normalized_circle: this.__normalizeRect2Circ(vector_normalized), //normalized circle
+      direction,
+      vector, //absolute value in face bounding rect
+      vector_normalized_square, //normalized square
+      vector_normalized_circle, //normalized circle
     };
   }
 

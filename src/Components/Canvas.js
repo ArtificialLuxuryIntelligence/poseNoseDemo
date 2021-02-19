@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-const STOPPING_RADIUS = 0.15;
+const STOPPING_RADIUS = 0.2;
 
 export default function Canvas({
   unitCirclePositionRef,

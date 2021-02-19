@@ -13,7 +13,8 @@ import Webcam from 'react-webcam';
 // note: wrapper includes hidden video element which needs to be in current view area (even if hidden)
 //
 
-const INTERVAL = 100;
+// const INTERVAL = 1000 / 60;
+const INTERVAL = 80;
 const DEFAULT_SPEED = 0.05;
 
 export default function nosePose(WrappedComponent, options) {
@@ -91,6 +92,7 @@ export default function nosePose(WrappedComponent, options) {
     // load and configure model
     useEffect(() => {
       async function loadModel() {
+        console.log('loading model');
         let faceDetector = new FaceDetector();
         faceDetector.configure(modelConfig); //configure bounding options
         let model = await faceDetector.load();
@@ -109,11 +111,11 @@ export default function nosePose(WrappedComponent, options) {
           detectFace(tfModel);
         }, INTERVAL);
       };
-
+      console.log('starting model detection loop');
       loopDectection();
 
       return () => {
-        // console.log('clearing interval');
+        console.log('stopping model detection loop');
         clearInterval(intervalTimerRef.current);
       };
     }, [tfModel]);
@@ -126,6 +128,8 @@ export default function nosePose(WrappedComponent, options) {
       // console.log('rerending animation');
 
       const animationLoop = () => {
+        console.log('starting animation');
+
         let prevCirclePos = [0, 0];
         let prevSquarePos = [0, 0];
 
@@ -180,7 +184,7 @@ export default function nosePose(WrappedComponent, options) {
       animationLoop();
 
       return () => {
-        // console.log('clearing animation frame');
+        console.log('stopping animation');
         cancelAnimationFrame(animationFrameRef.current);
       };
     }, [renderConfig]);

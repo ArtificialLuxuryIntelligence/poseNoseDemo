@@ -7,15 +7,9 @@ import Canvas from './Components/Canvas.js';
 import { configPresets } from './modules/nosePose/js/faceDetector';
 console.log(configPresets.normal);
 
-function App({
-  unitCirclePositionRef,
-  unitSquarePositionRef,
-  webcamReference,
-  configure,
-}) {
+function App({ unitCirclePositionRef, unitSquarePositionRef, configure }) {
   function clickHandlerWidth(type) {
     let modelConfig = { ...configPresets[type] };
-
     configure({ model: modelConfig });
   }
 
@@ -28,7 +22,6 @@ function App({
       <Canvas
         unitSquarePositionRef={unitSquarePositionRef}
         unitCirclePositionRef={unitCirclePositionRef}
-        webcamReference={webcamReference}
       />
       <button onClick={() => clickHandlerWidth('narrow')}>narrow config</button>
       <button onClick={() => clickHandlerWidth('normal')}>normal config</button>
@@ -42,7 +35,7 @@ function App({
 }
 
 export default nosePose(App, {
-  preview: { video: false, circleControl: false, squareControl: false },
+  preview: { video: true, circleControl: false, squareControl: false },
 });
 
 // export default nosePose(App);

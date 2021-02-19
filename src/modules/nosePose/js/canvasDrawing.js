@@ -143,7 +143,6 @@ function getBoundingDimensions(bounding) {
   let height = Math.abs(bounding_y[0]) + Math.abs(bounding_y[1]);
   let width = Math.abs(bounding_x[0]) + Math.abs(bounding_x[1]);
 
-  console.log(topLeft);
   return { topLeft, width, height };
 }
 

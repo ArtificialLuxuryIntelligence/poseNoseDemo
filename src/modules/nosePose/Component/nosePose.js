@@ -13,8 +13,7 @@ import Webcam from 'react-webcam';
 // note: wrapper includes hidden video element which needs to be in current view area (even if hidden)
 //
 
-const INTERVAL = 1000 / 20; // 40fps
-// const INTERVAL = 80;
+const INTERVAL = 1000 / 60; // 60fps
 const DEFAULT_SPEED = 0.2; // should be related to frame rate?
 
 export default function nosePose(WrappedComponent, options) {
@@ -26,7 +25,7 @@ export default function nosePose(WrappedComponent, options) {
         circleControl: false,
         squareControl: false,
       },
-      speed: {
+      responsiveness: {
         value: DEFAULT_SPEED,
       },
     },
@@ -83,14 +82,14 @@ export default function nosePose(WrappedComponent, options) {
     //     central_bounding: { x: [-20, 20], y: [-30, 30] },
     //     outer_bounding: { x: [-20, 20], y: [-15, 10] },
     //   },
-    //   render{
-    //     speed: 0.1
+    //   render:{
+    //     responsiveness: 0.1
     //   }
     // }
     const configure = (config) => {
       // set central_bounding and outer_bounding
       setNosePoseConfig((prev) => ({ ...prev, ...config.model }));
-      // set cursor speed
+      // set cursor responsiveness
       setRenderConfig((prev) => ({ ...prev, ...config.render }));
     };
 
@@ -161,7 +160,7 @@ export default function nosePose(WrappedComponent, options) {
             let newCirclePos = stepToward(
               prevCirclePos,
               actualCirclePos,
-              renderConfig?.speed || DEFAULT_SPEED
+              renderConfig?.responsiveness || DEFAULT_SPEED
             );
             prevCirclePos = newCirclePos;
             unitCirclePositionRef.current = prevCirclePos;
@@ -170,7 +169,7 @@ export default function nosePose(WrappedComponent, options) {
             let newSquarePos = stepToward(
               prevSquarePos,
               actualSquarePos,
-              renderConfig?.speed || DEFAULT_SPEED
+              renderConfig?.responsiveness || DEFAULT_SPEED
             );
             prevSquarePos = newSquarePos;
             unitSquarePositionRef.current = prevSquarePos;

@@ -1,6 +1,8 @@
 import * as tf from '@tensorflow/tfjs';
 import * as blazeface from '@tensorflow-models/blazeface';
 
+import { configPresets } from './presets';
+
 // Add custom property to existing face detection model (blazeface)
 
 export default class FaceDetector {
@@ -165,20 +167,3 @@ class FaceVectorDetector {
     return [x_normalized, y_normalized];
   }
 }
-
-const configPresets = {
-  narrow: {
-    central_bounding: { x: [-20, 20], y: [-30, 30] },
-    outer_bounding: { x: [-20, 20], y: [-15, 10] },
-  },
-  normal: {
-    central_bounding: { x: [-20, 20], y: [-30, 15] },
-    outer_bounding: { x: [-50, 50], y: [-35, 20] },
-  },
-  wide: {
-    central_bounding: { x: [-20, 20], y: [-30, 30] },
-    outer_bounding: { x: [-100, 100], y: [-65, 50] },
-  },
-};
-
-export { configPresets };

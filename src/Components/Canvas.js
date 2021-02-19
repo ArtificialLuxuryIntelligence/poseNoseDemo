@@ -5,10 +5,10 @@ const STOPPING_RATIO = 0.2; // area within which to no movement
 export default function Canvas({
   unitCirclePositionRef,
   unitSquarePositionRef,
+  speed,
 }) {
   const canvasRef = useRef(null);
   const animationFrameRef = useRef(null);
-  const [speed, setSpeed] = useState(6);
 
   useEffect(() => {
     const animationLoop = () => {
@@ -23,6 +23,8 @@ export default function Canvas({
       let canvasDimensions = [canvasWidth, canvasHeight];
 
       const loop = () => {
+        // console.log(speed);
+
         // Set canvas width
         canvasRef.current.width = window.innerWidth;
         canvasRef.current.height = window.innerHeight;
@@ -52,7 +54,7 @@ export default function Canvas({
       console.log('clearing animation frame');
       cancelAnimationFrame(animationFrameRef.current);
     };
-  }, [unitCirclePositionRef, unitSquarePositionRef]);
+  }, [unitCirclePositionRef, unitSquarePositionRef, speed]);
 
   return (
     <canvas

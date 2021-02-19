@@ -64,7 +64,6 @@ const drawBoundingFace = (
   prediction,
   ctx
 ) => {
-  
   //   console.log(prediction.__predictionConfig);
   const landmarks = prediction.landmarks;
   // Draw Dots
@@ -73,11 +72,12 @@ const drawBoundingFace = (
     const y = landmarks[i][1];
     ctx.beginPath();
     if (i === 2) {
+      // draw nose
       ctx.arc(x, y, 15 /* radius */, 0, 3 * Math.PI);
       ctx.fillStyle = 'black';
     } else {
-      //   ctx.arc(x, y, 10 /* radius */, 0, 3 * Math.PI);
-      //   ctx.fillStyle = 'orangered';
+      // ctx.arc(x, y, 10 /* radius */, 0, 3 * Math.PI);
+      // ctx.fillStyle = 'orangered';
     }
     // ctx.arc(x, y, 2 /* radius */, 0, 3 * Math.PI);
     ctx.fill();
@@ -91,7 +91,6 @@ const drawBoundingFace = (
   ctx.stroke();
 
   // Draw bounding configuration boxes
-
 
   // Draw central bounding box;
   // const {
@@ -116,6 +115,8 @@ const drawBoundingFace = (
     width: width_o,
     height: height_o,
   } = getBoundingDimensions(outer_bounding);
+
+  console.log(topLeft_o);
 
   ctx.strokeStyle = 'purple';
   ctx.beginPath();
@@ -147,7 +148,7 @@ function getDimensions(prediction) {
 
 function getBoundingDimensions(bounding) {
   let { x: bounding_x, y: bounding_y } = bounding;
-  let topLeft = [bounding_x[0], bounding_y[0]];
+  let topLeft = [-bounding_x[1], -bounding_y[1]]; // weirdness to correct for mirror
   let height = Math.abs(bounding_y[0]) + Math.abs(bounding_y[1]);
   let width = Math.abs(bounding_x[0]) + Math.abs(bounding_x[1]);
 

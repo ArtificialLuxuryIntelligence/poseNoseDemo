@@ -83,16 +83,16 @@ const drawBoundingFace = (
     ctx.fill();
   }
 
-  // Draw bounding box;
   const { topLeft, width, height, center } = getDimensions(prediction);
-  ctx.strokeStyle = 'pink';
-  ctx.beginPath();
-  ctx.rect(topLeft[0], topLeft[1], width, height);
-  ctx.stroke();
+  // -------------------- Draw face bounding box;
+  // ctx.strokeStyle = 'pink';
+  // ctx.beginPath();
+  // ctx.rect(topLeft[0], topLeft[1], width, height);
+  // ctx.stroke();
 
-  // Draw bounding configuration boxes
+  // --------------------------------------------Draw  configuration bounding boxes
 
-  // Draw central bounding box;
+  //  --------------- Draw central bounding box;
   // const {
   //   topLeft: topLeft_c,
   //   width: width_c,
@@ -109,7 +109,7 @@ const drawBoundingFace = (
   // );
   // ctx.stroke();
 
-  // Draw outer bounding box
+  // --------------- Draw outer bounding box
   const {
     topLeft: topLeft_o,
     width: width_o,
@@ -125,6 +125,15 @@ const drawBoundingFace = (
     height_o
   );
   ctx.stroke();
+
+  ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+  // ctx.fillStyle = 'pink';
+  ctx.fillRect(
+    center[0] + topLeft_o[0],
+    center[1] + topLeft_o[1],
+    width_o,
+    height_o
+  );
 };
 
 function clearCanvas(ctx) {

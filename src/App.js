@@ -13,7 +13,10 @@ function App({ unitCirclePositionRef, unitSquarePositionRef, configure }) {
   const [stoppingRatio, setStoppingRatio] = useState(0.2);
 
   return (
-    <div className="App" style={{}}>
+    <div
+      className="App"
+      style={{ minWidth: '100vw', minHeight: '100vh', display: 'flex' }}
+    >
       <Canvas
         unitSquarePositionRef={unitSquarePositionRef}
         unitCirclePositionRef={unitCirclePositionRef}
@@ -26,6 +29,7 @@ function App({ unitCirclePositionRef, unitSquarePositionRef, configure }) {
         setSpeed={setSpeed}
         stoppingRatio={stoppingRatio}
         setStoppingRatio={setStoppingRatio}
+       
       />
 
       {/* <button onClick={() => clickHandlerWidth('narrow')}>narrow config</button>

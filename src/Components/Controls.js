@@ -18,7 +18,7 @@ export default function Controls({
   };
 
   const [x, setX] = useState({ min: -50, max: 50 });
-  const [y, setY] = useState({ min: -50, max: 50 });
+  const [y, setY] = useState({ min: -30, max: 30 });
   const [responsiveness, setResponsiveness] = useState(0.1);
 
   useEffect(() => {
@@ -41,9 +41,7 @@ export default function Controls({
     <div
       className="control-container"
       style={{
-        position: 'absolute',
-        bottom: 20,
-        left: 20,
+        width: '20vw',
       }}
     >
       <p>
@@ -59,89 +57,108 @@ export default function Controls({
       </p>
 
       <p>speed : {speed}</p>
-      <label>x min</label>
-      <Slider
-        onChange={({ x }) => setX((state) => ({ ...state, min: x }))}
-        axis="x"
-        x={x.min}
-        xstep={1}
-        xmin={-100}
-        xmax={0}
-        id="xMin"
-      />
-      <label>x max</label>
+      <div className="slider-control">
+        <label>x min</label>
+        <Slider
+          onChange={({ x }) => setX((state) => ({ ...state, min: x }))}
+          axis="x"
+          x={x.min}
+          xstep={1}
+          xmin={-100}
+          xmax={0}
+          id="xMin"
+        />
+      </div>
 
-      <Slider
-        onChange={({ x }) => setX((state) => ({ ...state, max: x }))}
-        axis="x"
-        x={x.max}
-        xstep={1}
-        xmin={0}
-        xmax={100}
-        id="xMax"
-      />
-      <label>y min</label>
+      <div className="slider-control">
+        <label>x max</label>
 
-      <Slider
-        onChange={({ y }) => setY((state) => ({ ...state, min: y }))}
-        axis="y"
-        y={y.min}
-        ystep={1}
-        ymin={0}
-        ymax={-100}
-        id="yMin"
-      />
+        <Slider
+          onChange={({ x }) => setX((state) => ({ ...state, max: x }))}
+          axis="x"
+          x={x.max}
+          xstep={1}
+          xmin={0}
+          xmax={100}
+          id="xMax"
+        />
+      </div>
+      <div
+        className="control-group"
+        style={{ display: 'flex', justifyContent: 'space-around' }}
+      >
+        <div className="slider-control">
+          <label>y min</label>
 
-      <label>y max</label>
+          <Slider
+            onChange={({ y }) => setY((state) => ({ ...state, min: y }))}
+            axis="y"
+            y={y.min}
+            ystep={1}
+            ymin={0}
+            ymax={-100}
+            id="yMin"
+          />
+        </div>
 
-      <Slider
-        onChange={({ y }) => setY((state) => ({ ...state, max: y }))}
-        axis="y"
-        y={y.max}
-        ystep={1}
-        ymin={100}
-        ymax={0}
-        id="yMax"
-      />
+        <div className="slider-control">
+          <label>y max</label>
 
-      <label>responsiveness</label>
+          <Slider
+            onChange={({ y }) => setY((state) => ({ ...state, max: y }))}
+            axis="y"
+            y={y.max}
+            ystep={1}
+            ymin={100}
+            ymax={0}
+            id="yMax"
+          />
+        </div>
+      </div>
+      <div className="slider-control">
+        <label>responsiveness</label>
 
-      <Slider
-        onChange={({ x }) => setResponsiveness(parseFloat(x.toFixed(2)))}
-        x={responsiveness}
-        xstep={0.005}
-        xmin={0}
-        xmax={1}
-        id="responsiveness"
-      />
+        <Slider
+          onChange={({ x }) => setResponsiveness(parseFloat(x.toFixed(2)))}
+          x={responsiveness}
+          xstep={0.005}
+          xmin={0}
+          xmax={1}
+          id="responsiveness"
+        />
+      </div>
 
-      <label>speed</label>
+      <div className="slider-control">
+        <label>speed</label>
 
-      <Slider
-        onChange={({ x }) => {
-          console.log(x);
-          setSpeed(parseFloat(parseFloat(x.toFixed(2))));
-        }}
-        x={speed}
-        xstep={0.1}
-        xmin={1}
-        xmax={30}
-        id="speed"
-      />
+        <Slider
+          onChange={({ x }) => {
+            console.log(x);
+            setSpeed(parseFloat(parseFloat(x.toFixed(2))));
+          }}
+          x={speed}
+          xstep={0.1}
+          xmin={1}
+          xmax={30}
+          id="speed"
+        />
+      </div>
 
-      <label>stopping ratio</label>
+      <div className="slider-control">
+        <label>stopping ratio</label>
 
-      <Slider
-        onChange={({ x }) => {
-          console.log(x);
-          setStoppingRatio(parseFloat(x.toFixed(2)));
-        }}
-        x={stoppingRatio}
-        xstep={0.05}
-        xmin={0}
-        xmax={1}
-        id="stopping-ratiox"
-      />
+        <Slider
+          onChange={({ x }) => {
+            console.log(x);
+            setStoppingRatio(parseFloat(x.toFixed(2)));
+          }}
+          x={stoppingRatio}
+          xstep={0.05}
+          xmin={0}
+          xmax={1}
+          id="stopping-ratiox"
+        />
+      </div>
     </div>
   );
 }

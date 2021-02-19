@@ -61,6 +61,9 @@ export default function Canvas({
       ref={canvasRef}
       style={{
         position: 'absolute',
+        // border: '10px solid red',
+        width: '100%',
+        height: '100%',
 
         top: 0,
         left: 0,

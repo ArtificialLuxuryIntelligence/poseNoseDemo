@@ -208,6 +208,7 @@ export default function nosePose(WrappedComponent, options) {
         >
           <Webcam
             ref={webcamReference}
+            audio={false}
             style={{
               visibility: options.preview.video ? 'auto' : 'hidden',
               // display: 'none',

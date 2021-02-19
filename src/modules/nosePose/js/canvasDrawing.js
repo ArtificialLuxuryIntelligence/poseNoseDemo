@@ -91,23 +91,24 @@ const drawBoundingFace = (
   ctx.stroke();
 
   // Draw bounding configuration boxes
-  // const { central_bounding, outer_bounding } = prediction.__predictionConfig;
-  // Draw central bounding box;
-  const {
-    topLeft: topLeft_c,
-    width: width_c,
-    height: height_c,
-  } = getBoundingDimensions(central_bounding);
 
-  ctx.strokeStyle = 'green';
-  ctx.beginPath();
-  ctx.rect(
-    center[0] + topLeft_c[0],
-    center[1] + topLeft_c[1],
-    width_c,
-    height_c
-  );
-  ctx.stroke();
+
+  // Draw central bounding box;
+  // const {
+  //   topLeft: topLeft_c,
+  //   width: width_c,
+  //   height: height_c,
+  // } = getBoundingDimensions(central_bounding);
+
+  // ctx.strokeStyle = 'green';
+  // ctx.beginPath();
+  // ctx.rect(
+  //   center[0] + topLeft_c[0],
+  //   center[1] + topLeft_c[1],
+  //   width_c,
+  //   height_c
+  // );
+  // ctx.stroke();
 
   // Draw outer bounding box
   const {

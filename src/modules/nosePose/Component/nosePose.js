@@ -13,9 +13,9 @@ import Webcam from 'react-webcam';
 // note: wrapper includes hidden video element which needs to be in current view area (even if hidden)
 //
 
-const INTERVAL = 1000 / 40; // 40fps
+const INTERVAL = 1000 / 20; // 40fps
 // const INTERVAL = 80;
-const DEFAULT_SPEED = 0.1; // should be related to frame rate
+const DEFAULT_SPEED = 0.2; // should be related to frame rate?
 
 export default function nosePose(WrappedComponent, options) {
   // render configuration:
@@ -190,7 +190,6 @@ export default function nosePose(WrappedComponent, options) {
 
               let { central_bounding, outer_bounding } = config;
 
-              // let faceBounding = currentPrectionRef.current;
               options.preview.video &&
                 drawBoundingFace(
                   central_bounding,

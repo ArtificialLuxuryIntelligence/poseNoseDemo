@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-const STOPPING_RADIUS = 0.2;
+const STOPPING_RATIO = 0.2; // area within which to no movement
 
 export default function Canvas({
   unitCirclePositionRef,
@@ -34,7 +34,7 @@ export default function Canvas({
           position = updatePosition(
             vector,
             position,
-            STOPPING_RADIUS,
+            STOPPING_RATIO,
             canvasDimensions,
             speed
           );
@@ -135,6 +135,11 @@ const drawJoystick = (
   ctx.beginPath();
   ctx.arc(c_x, c_y, r, 0, 2 * Math.PI);
   ctx.fillStyle = 'red';
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(c_x, c_y, STOPPING_RATIO * r, 0, 2 * Math.PI);
+  ctx.fillStyle = 'blue';
   ctx.fill();
 
   ctx.beginPath();

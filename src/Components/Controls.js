@@ -65,8 +65,8 @@ export default function Controls({
         axis="x"
         x={x.min}
         xstep={1}
-        xmin={0}
-        xmax={-100}
+        xmin={-100}
+        xmax={0}
         id="xMin"
       />
       <label>x max</label>
@@ -87,8 +87,8 @@ export default function Controls({
         axis="y"
         y={y.min}
         ystep={1}
-        ymin={-100}
-        ymax={0}
+        ymin={0}
+        ymax={-100}
         id="yMin"
       />
 
@@ -99,8 +99,8 @@ export default function Controls({
         axis="y"
         y={y.max}
         ystep={1}
-        ymin={0}
-        ymax={100}
+        ymin={100}
+        ymax={0}
         id="yMax"
       />
 

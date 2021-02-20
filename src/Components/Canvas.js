@@ -61,9 +61,11 @@ export default function Canvas({
       ref={canvasRef}
       style={{
         position: 'absolute',
+        position: 'fixed',
+
         // border: '10px solid red',
-        width: '100%',
-        height: '100%',
+        width: '100vw',
+        height: '100vh',
 
         top: 0,
         left: 0,
@@ -146,19 +148,30 @@ const drawJoystick = (
   let x_j = c_x - x * scaleFactor;
   let y_j = c_y - y * scaleFactor;
 
+  //outer limit
   ctx.beginPath();
   ctx.arc(c_x, c_y, r, 0, 2 * Math.PI);
-  ctx.fillStyle = 'red';
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.arc(c_x, c_y, stoppingRatio * r, 0, 2 * Math.PI);
   ctx.fillStyle = 'blue';
   ctx.fill();
 
+  // stopping ratio
   ctx.beginPath();
+  ctx.arc(c_x, c_y, stoppingRatio * r, 0, 2 * Math.PI);
+  ctx.fillStyle = 'red';
+  ctx.fill();
 
-  ctx.arc(x_j, y_j, 10, 0, 2 * Math.PI);
+  //vector tip
+  ctx.beginPath();
+  ctx.arc(x_j, y_j, 8, 0, 2 * Math.PI);
   ctx.fillStyle = 'white';
   ctx.fill();
+
+  // line to vector
+  ctx.strokeStyle = 'white';
+  ctx.lineWidth = 5;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(c_x, c_y);
+  ctx.lineTo(x_j, y_j);
+  ctx.stroke();
 };

@@ -43,17 +43,18 @@ export default function Controls({
     >
       <pre>
         {JSON.stringify(
-          {
-            model: {
-              outer_bounding: { x, y },
-            },
-            render: {
-              responsiveness: responsiveness,
-              performance: {
-                fps: FPS,
-              },
-            },
-          },
+          // {
+          //   model: {
+          //     outer_bounding: { x, y },
+          //   },
+          //   render: {
+          //     responsiveness: responsiveness,
+          //     performance: {
+          //       fps: FPS,
+          //     },
+          //   },
+          // },
+          configs,
           null,
           4
         )}
@@ -66,7 +67,7 @@ export default function Controls({
         <Slider
           onChange={({ x }) => setX((state) => [x, state[1]])}
           axis="x"
-          x={x.min}
+          x={x[0]}
           xstep={1}
           xmin={-100}
           xmax={0}
@@ -78,9 +79,9 @@ export default function Controls({
         <label>x max</label>
 
         <Slider
-          onChange={({ x }) => setX((state) => [state[1], x])}
+          onChange={({ x }) => setX((state) => [state[0], x])}
           axis="x"
-          x={x.max}
+          x={x[1]}
           xstep={1}
           xmin={0}
           xmax={100}
@@ -97,7 +98,7 @@ export default function Controls({
           <Slider
             onChange={({ y }) => setY((state) => [y, state[1]])}
             axis="y"
-            y={y.min}
+            y={y[0]}
             ystep={1}
             ymin={0}
             ymax={-100}
@@ -109,9 +110,9 @@ export default function Controls({
           <label>y max</label>
 
           <Slider
-            onChange={({ y }) => setY((state) => [state[1], x])}
+            onChange={({ y }) => setY((state) => [state[0], y])}
             axis="y"
-            y={y.max}
+            y={y[1]}
             ystep={1}
             ymin={100}
             ymax={0}
@@ -124,7 +125,7 @@ export default function Controls({
 
         <Slider
           onChange={({ x }) => setResponsive(parseFloat(x.toFixed(2)))}
-          x={responsiveness}
+          x={responsive}
           xstep={0.005}
           xmin={0}
           xmax={1}
@@ -137,7 +138,6 @@ export default function Controls({
 
         <Slider
           onChange={({ x }) => {
-            console.log(x);
             setSpeed(parseFloat(parseFloat(x.toFixed(2))));
           }}
           x={speed}
@@ -153,7 +153,6 @@ export default function Controls({
 
         <Slider
           onChange={({ x }) => {
-            console.log(x);
             setStoppingRatio(parseFloat(x.toFixed(2)));
           }}
           x={stoppingRatio}
@@ -179,12 +178,3 @@ export default function Controls({
     </div>
   );
 }
-
-// function clickHandlerWidth(type) {
-//   let modelConfig = { ...configPresets[type] };
-//   configure({ model: modelConfig });
-// }
-
-// function clickHandlerSpeed(speed) {
-//   configure({ render: { speed: speed } });
-// }

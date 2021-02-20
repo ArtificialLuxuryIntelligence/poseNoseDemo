@@ -24,7 +24,7 @@ const RENDER_OPTIONS_DEFAULT = {
     value: 0.2,
   },
   performance: {
-    fps: 60,
+    fps: 30,
   },
 };
 const MODEL_OPTIONS_DEFAULT = {
@@ -88,22 +88,6 @@ export default function nosePose(
         currentPredictionRef.current = prediction;
       }
     };
-    // configuration options
-    // e.g.
-    // let config = {
-    //   model: {
-    //     // affects the raw output vector
-    //     central_bounding: { x: [-20, 20], y: [-30, 30] },
-    //     outer_bounding: { x: [-20, 20], y: [-15, 10] },
-    //   },
-    //   render: {
-    //     // affects display
-    //     responsiveness: { value: 0.1 },
-    //     performance: {
-    //       fps: 60,
-    //     },
-    //   },
-    // };
 
     // configures both the model options and the render options
 
@@ -236,10 +220,11 @@ export default function nosePose(
     return (
       <>
         <div
-          className="magic-wrapper"
+          className="nose-pose"
           style={{
             pointerEvents: 'none',
-            position: 'absolute',
+            position: 'fixed',
+            display: 'flex',
             top: 0,
             width: '100vw',
             height: '100vh',
@@ -252,13 +237,13 @@ export default function nosePose(
               visibility: displayConfig.video ? 'auto' : 'hidden',
               position: 'absolute',
               marginLeft: 'auto',
-              marginRight: 'auto',
+              // marginRight: 'auto',
               left: 0,
               right: 0,
-              textAlign: 'center',
+              // textAlign: 'center',
               zindex: 9,
-              width: 720,
-              height: 500,
+              width: '40vw',
+              height: 'auto',
               transform: 'scale(-1, 1)',
             }}
           />
@@ -266,16 +251,17 @@ export default function nosePose(
           <canvas
             ref={canvasReference}
             style={{
-              visibility: display ? 'auto' : 'hidden',
+              // visibility: display ? 'auto' : 'hidden',
+              display: display ? 'auto' : 'none',
               position: 'absolute',
               marginLeft: 'auto',
-              marginRight: 'auto',
+              // marginRight: 'auto',
               left: 0,
               right: 0,
               textAlign: 'center',
               zindex: 999,
-              width: 720,
-              height: 500,
+              width: '40vw',
+              // height: 500,
               transform: 'scale(-1, 1)',
             }}
           />
@@ -285,12 +271,12 @@ export default function nosePose(
           unitSquarePositionRef={unitSquarePositionRef}
           configure={configure}
           configs={{ render: renderConfig, model: modelConfig }}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            visibility: 'hidden',
-          }}
+          // style={{
+          //   position: 'absolute',
+          //   top: 0,
+          //   left: 0,
+          //   visibility: 'hidden',
+          // }}
         />
       </>
     );

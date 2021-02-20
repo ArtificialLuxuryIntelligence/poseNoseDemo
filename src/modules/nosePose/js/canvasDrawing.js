@@ -12,7 +12,8 @@ const drawCircleControl = function (
 
   ctx.beginPath();
   ctx.arc(c_x, c_y, r, 0, 2 * Math.PI);
-  ctx.fillStyle = 'red';
+  ctx.fillStyle = 'rgba(200,0,0,0.8)';
+
   ctx.fill();
 
   ctx.beginPath();
@@ -47,7 +48,7 @@ const drawSquareControl = function (
   //   ctx.strokeStyle = 'pink';
   ctx.beginPath();
   ctx.rect(topLeft[0], topLeft[1], outputDimensions[0], outputDimensions[1]);
-  ctx.fillStyle = 'red';
+  ctx.fillStyle = 'rgba(200,0,0,0.8)';
   ctx.fill();
   //   ctx.stroke();
 
@@ -64,7 +65,6 @@ const drawBoundingFace = (
   prediction,
   ctx
 ) => {
-  //   console.log(prediction.__predictionConfig);
   const landmarks = prediction.landmarks;
   // Draw Dots
   for (let i = 0; i < landmarks.length; i++) {
@@ -92,7 +92,7 @@ const drawBoundingFace = (
 
   // --------------------------------------------Draw  configuration bounding boxes
 
-  //  --------------- Draw central bounding box;
+  //  --------------- Draw central bounding box; // only used for named directions "up" "down" etc -- going to be removed
   // const {
   //   topLeft: topLeft_c,
   //   width: width_c,
@@ -126,7 +126,7 @@ const drawBoundingFace = (
   );
   ctx.stroke();
 
-  ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
   // ctx.fillStyle = 'pink';
   ctx.fillRect(
     center[0] + topLeft_o[0],

@@ -4,19 +4,25 @@ import nosePose from './modules/nosePose/Component/nosePose.js';
 import Canvas from './Components/Canvas.js';
 import Controls from './Components/Controls';
 
+const STOPPING_RATIO_DEFAULT = 0.5;
+const SPEED_DEFAULT = 12;
+
 function App({
   unitCirclePositionRef,
   unitSquarePositionRef,
   configure,
   configs,
 }) {
-  const [speed, setSpeed] = useState(12);
-  const [stoppingRatio, setStoppingRatio] = useState(0.2);
+  const [speed, setSpeed] = useState(SPEED_DEFAULT);
+  const [stoppingRatio, setStoppingRatio] = useState(STOPPING_RATIO_DEFAULT);
 
   return (
     <div
       className="App"
-      style={{ width: '100vw', minHeight: '100vh', display: 'flex' }}
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+      }}
     >
       <Canvas
         unitSquarePositionRef={unitSquarePositionRef}
@@ -39,8 +45,8 @@ function App({
 }
 
 export default nosePose(
-  App
-  // { video: true, circleControl: true, squareControl: true }
+  App,
+  { video: true, circleControl: true, squareControl: true }
   // {
   //   responsiveness: {
   //     value: 0.1,

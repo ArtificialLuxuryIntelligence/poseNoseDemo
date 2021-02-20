@@ -6,31 +6,16 @@ import {
   drawSquareControl,
   drawBoundingFace,
 } from '../js/canvasDrawing';
+
+import { stepToward } from '../js/geometry.js';
+
+import {
+  RENDER_OPTIONS_DEFAULT,
+  DISPLAY_OPTIONS_DEFAULT,
+  MODEL_OPTIONS_DEFAULT,
+} from '../js/defaults';
 import FaceDetector from '../js/faceDetector.js';
 import Webcam from 'react-webcam';
-
-//
-// note: wrapper includes hidden video element which needs to be in current view area (even if hidden)
-//
-
-const DISPLAY_OPTIONS_DEFAULT = {
-  video: false,
-  circleControl: false,
-  squareControl: false,
-};
-
-const RENDER_OPTIONS_DEFAULT = {
-  responsiveness: {
-    value: 0.2,
-  },
-  performance: {
-    fps: 30,
-  },
-};
-const MODEL_OPTIONS_DEFAULT = {
-  central_bounding: { x: [-20, 20], y: [-30, 15] },
-  outer_bounding: { x: [-50, 50], y: [-35, 35] },
-};
 
 export default function nosePose(
   WrappedComponent,
@@ -40,7 +25,7 @@ export default function nosePose(
 ) {
   displayOptions = Object.assign(DISPLAY_OPTIONS_DEFAULT, displayOptions);
   renderOptions = Object.assign(RENDER_OPTIONS_DEFAULT, renderOptions);
-  modelOptions = Object.assign(MODEL_OPTIONS_DEFAULT, modelOptions); // default empty - the loaded model handles no input
+  modelOptions = Object.assign(MODEL_OPTIONS_DEFAULT, modelOptions);
 
   function AddDetection() {
     const [tfModel, setModelLoaded] = useState(null);
@@ -56,6 +41,10 @@ export default function nosePose(
     const currentPredictionRef = useRef(null);
     const unitCirclePositionRef = useRef(null);
     const unitSquarePositionRef = useRef(null);
+
+    //layout
+
+    // const [innerDims, setInnerDims] = useState([0, 0]);
 
     // Sets currentPredictionRef to nosePose predictions
     const detectFace = async (model) => {
@@ -89,8 +78,7 @@ export default function nosePose(
       }
     };
 
-    // configures both the model options and the render options
-
+    // configures  both the model options and the render options (triggers useEffect to actually update)
     const configure = useCallback((config) => {
       // set cursor responsiveness, performance
       setRenderConfig((prev) => ({ ...prev, ...config.render }));
@@ -98,17 +86,6 @@ export default function nosePose(
       // set central_bounding and outer_bounding
       setModelConfig((prev) => ({ ...prev, ...config.model }));
     }, []);
-
-    // update modelConfig
-    useEffect(() => {
-      tfModel && tfModel.nosePose.configure(modelConfig);
-    }, [tfModel, modelConfig]);
-
-    // toggle display on load
-    useEffect(() => {
-      let display = Object.values(displayConfig).some((v) => v === true);
-      setDisplay(display);
-    }, [displayConfig]);
 
     // load  model
     useEffect(() => {
@@ -121,6 +98,17 @@ export default function nosePose(
       }
       loadModel();
     }, []);
+
+    // update modelConfig
+    useEffect(() => {
+      tfModel && tfModel.nosePose.configure(modelConfig);
+    }, [tfModel, modelConfig]);
+
+    // toggle display on load
+    useEffect(() => {
+      let display = Object.values(displayConfig).some((v) => v === true);
+      setDisplay(display);
+    }, [displayConfig]);
 
     // start model detection loop
     useEffect(() => {
@@ -155,7 +143,6 @@ export default function nosePose(
 
         const loop = () => {
           if (currentPredictionRef.current) {
-            // console.log(currentPredictionRef.current);
             // -------------------interpolate
             let actualCirclePos =
               currentPredictionRef.current.vectors.vector_normalized_circle;
@@ -186,10 +173,18 @@ export default function nosePose(
               clearCanvas(ctx);
 
               displayConfig.circleControl &&
-                drawCircleControl(prevCirclePos, ctx);
+                drawCircleControl(prevCirclePos, ctx, {
+                  inputRadius: 1,
+                  outputRadius: 50,
+                  center: [70, 70], // note: canvas is mirrored
+                });
 
               displayConfig.squareControl &&
-                drawSquareControl(prevSquarePos, ctx);
+                drawSquareControl(prevSquarePos, ctx, {
+                  inputDimensions: [1, 1],
+                  outputDimensions: [100, 100],
+                  topLeft: [20, 140], // note: canvas is mirrored
+                });
 
               let { predictions, config } = currentPredictionRef.current;
 
@@ -226,7 +221,8 @@ export default function nosePose(
             position: 'fixed',
             display: 'flex',
             top: 0,
-            width: '100vw',
+            left: 0,
+            right: 0,
             height: '100vh',
           }}
         >
@@ -240,7 +236,6 @@ export default function nosePose(
               // marginRight: 'auto',
               left: 0,
               right: 0,
-              // textAlign: 'center',
               zindex: 9,
               width: '40vw',
               height: 'auto',
@@ -251,7 +246,6 @@ export default function nosePose(
           <canvas
             ref={canvasReference}
             style={{
-              // visibility: display ? 'auto' : 'hidden',
               display: display ? 'auto' : 'none',
               position: 'absolute',
               marginLeft: 'auto',
@@ -266,17 +260,12 @@ export default function nosePose(
             }}
           />
         </div>
+
         <WrappedComponent
           unitCirclePositionRef={unitCirclePositionRef}
           unitSquarePositionRef={unitSquarePositionRef}
           configure={configure}
           configs={{ render: renderConfig, model: modelConfig }}
-          // style={{
-          //   position: 'absolute',
-          //   top: 0,
-          //   left: 0,
-          //   visibility: 'hidden',
-          // }}
         />
       </>
     );
@@ -284,23 +273,3 @@ export default function nosePose(
 
   return AddDetection;
 }
-
-//   /// -----------------------------------------------------------------------------------
-//   /// -----------------------------------------------------------------------------------
-
-//   // step size range [0,1] (percent of total dist)
-function stepToward(prevPos, actualPos, stepSize = 0.1) {
-  let x, y;
-  let [x1, y1] = [...prevPos];
-  let [x2, y2] = [...actualPos];
-
-  let d_x = x2 - x1;
-  let d_y = y2 - y1;
-
-  x = x1 + d_x * stepSize;
-  y = y1 + d_y * stepSize;
-  // console.log(x);
-  return [x, y];
-}
-
-/////////////

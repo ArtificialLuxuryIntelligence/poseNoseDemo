@@ -38,29 +38,11 @@ export default function Controls({
     <div
       className="control-container"
       style={{
-        width: '20vw',
+        width: '40vw',
       }}
     >
-      <pre>
-        {JSON.stringify(
-          // {
-          //   model: {
-          //     outer_bounding: { x, y },
-          //   },
-          //   render: {
-          //     responsiveness: responsiveness,
-          //     performance: {
-          //       fps: FPS,
-          //     },
-          //   },
-          // },
-          configs,
-          null,
-          4
-        )}
-      </pre>
-
       <p>speed : {speed}</p>
+      <p>stoppingRatio: {stoppingRatio}</p>
 
       <div className="slider-control">
         <label>x min</label>
@@ -175,6 +157,24 @@ export default function Controls({
           id="fps"
         />
       </div>
+      <pre>
+        {JSON.stringify(
+          // {
+          //   model: {
+          //     outer_bounding: { x, y },
+          //   },
+          //   render: {
+          //     responsiveness: responsiveness,
+          //     performance: {
+          //       fps: FPS,
+          //     },
+          //   },
+          // },
+          configs,
+          null,
+          4
+        )}
+      </pre>
     </div>
   );
 }

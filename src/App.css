@@ -1,6 +1,15 @@
 * {
   box-sizing: border-box;
 }
+#root {
+  position: relative;
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+}
 
 .App {
   /* text-align: center;

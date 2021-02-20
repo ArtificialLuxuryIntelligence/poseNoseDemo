@@ -5,10 +5,15 @@ import nosePose from './modules/nosePose/Component/nosePose.js';
 import Canvas from './Components/Canvas.js';
 import Controls from './Components/Controls';
 
-import { configPresets } from './modules/nosePose/js/presets';
-console.log(configPresets.normal);
+// import { configPresets } from './modules/nosePose/js/presets';
+// console.log(configPresets.normal);
 
-function App({ unitCirclePositionRef, unitSquarePositionRef, configure }) {
+function App({
+  unitCirclePositionRef,
+  unitSquarePositionRef,
+  configure,
+  configs,
+}) {
   const [speed, setSpeed] = useState(6);
   const [stoppingRatio, setStoppingRatio] = useState(0.2);
 
@@ -24,27 +29,36 @@ function App({ unitCirclePositionRef, unitSquarePositionRef, configure }) {
         stoppingRatio={stoppingRatio}
       />
       <Controls
+        // general controls
         configure={configure}
+        configs={configs}
+        // moving cursor controls
         speed={speed}
         setSpeed={setSpeed}
         stoppingRatio={stoppingRatio}
         setStoppingRatio={setStoppingRatio}
-       
       />
-
-      {/* <button onClick={() => clickHandlerWidth('narrow')}>narrow config</button>
-      <button onClick={() => clickHandlerWidth('normal')}>normal config</button>
-      <button onClick={() => clickHandlerWidth('wide')}> wide config</button>
-
-      <button onClick={() => clickHandlerSpeed(0.01)}>slow config</button>
-      <button onClick={() => clickHandlerSpeed(0.05)}>normal config</button>
-      <button onClick={() => clickHandlerSpeed(0.1)}> fast config</button> */}
     </div>
   );
 }
 
-export default nosePose(App, {
-  preview: { video: true, circleControl: true, squareControl: true },
-});
+export default nosePose(
+  App
+  // { video: true, circleControl: true, squareControl: true },
+  // {
+  //   responsiveness: {
+  //     value: 0.1,
+  //   },
+  //   performance: {
+  //     fps: 10,
+  //   },
+  // }
+  // {
+  //   outer_bounding: {
+  //     x: [-50, 50],
+  //     y: [-35, 35],
+  //   },
+  // }
+);
 
 // export default nosePose(App);

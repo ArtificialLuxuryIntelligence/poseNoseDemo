@@ -3,39 +3,36 @@ import Slider from 'react-input-slider';
 
 export default function Controls({
   configure,
+  configs,
   speed,
   setSpeed,
   stoppingRatio,
   setStoppingRatio,
 }) {
-  const useHandleChange = (initial) => {
-    const [value, setValue] = useState(initial);
-    const setChange = useCallback((event) => {
-      //   console.log(event);
-      setValue(event.target.id);
-    }, []);
-    return [value, setChange];
-  };
+  // console.log('configsss', configs);
+  // const [configs, setConfigs] = useState(configs);
 
-  const [x, setX] = useState({ min: -50, max: 50 });
-  const [y, setY] = useState({ min: -30, max: 30 });
-  const [responsiveness, setResponsiveness] = useState(0.1);
+  const { responsiveness, performance } = configs.render;
+  const { outer_bounding } = configs.model;
+
+  const [x, setX] = useState(outer_bounding.x);
+  const [y, setY] = useState(outer_bounding.y);
+  const [responsive, setResponsive] = useState(responsiveness.value);
+  const [FPS, setFPS] = useState(performance.fps);
 
   useEffect(() => {
-    // console.log(configure);
-    // configure({render:{
-    //     speed:
-    // }})
     configure({
-      model: {
-        outer_bounding: { x: [x.min, x.max], y: [y.min, y.max] },
-        // outer_bounding: { x: [-20, 20], y: [-15, 10] },
-      },
       render: {
-        responsiveness: responsiveness,
+        responsiveness: { value: responsive },
+        performance: {
+          fps: FPS,
+        },
+      },
+      model: {
+        outer_bounding: { x, y },
       },
     });
-  }, [x, y, responsiveness]);
+  }, [x, y, responsive, FPS, configure]);
 
   return (
     <div
@@ -44,23 +41,30 @@ export default function Controls({
         width: '20vw',
       }}
     >
-      <p>
-        {JSON.stringify({
-          model: {
-            outer_bounding: { x: [x.min, x.max], y: [y.min, y.max] },
-            // outer_bounding: { x: [-20, 20], y: [-15, 10] },
+      <pre>
+        {JSON.stringify(
+          {
+            model: {
+              outer_bounding: { x, y },
+            },
+            render: {
+              responsiveness: responsiveness,
+              performance: {
+                fps: FPS,
+              },
+            },
           },
-          render: {
-            responsiveness: responsiveness,
-          },
-        })}
-      </p>
+          null,
+          4
+        )}
+      </pre>
 
       <p>speed : {speed}</p>
+
       <div className="slider-control">
         <label>x min</label>
         <Slider
-          onChange={({ x }) => setX((state) => ({ ...state, min: x }))}
+          onChange={({ x }) => setX((state) => [x, state[1]])}
           axis="x"
           x={x.min}
           xstep={1}
@@ -74,7 +78,7 @@ export default function Controls({
         <label>x max</label>
 
         <Slider
-          onChange={({ x }) => setX((state) => ({ ...state, max: x }))}
+          onChange={({ x }) => setX((state) => [state[1], x])}
           axis="x"
           x={x.max}
           xstep={1}
@@ -91,7 +95,7 @@ export default function Controls({
           <label>y min</label>
 
           <Slider
-            onChange={({ y }) => setY((state) => ({ ...state, min: y }))}
+            onChange={({ y }) => setY((state) => [y, state[1]])}
             axis="y"
             y={y.min}
             ystep={1}
@@ -105,7 +109,7 @@ export default function Controls({
           <label>y max</label>
 
           <Slider
-            onChange={({ y }) => setY((state) => ({ ...state, max: y }))}
+            onChange={({ y }) => setY((state) => [state[1], x])}
             axis="y"
             y={y.max}
             ystep={1}
@@ -119,7 +123,7 @@ export default function Controls({
         <label>responsiveness</label>
 
         <Slider
-          onChange={({ x }) => setResponsiveness(parseFloat(x.toFixed(2)))}
+          onChange={({ x }) => setResponsive(parseFloat(x.toFixed(2)))}
           x={responsiveness}
           xstep={0.005}
           xmin={0}
@@ -157,6 +161,19 @@ export default function Controls({
           xmin={0}
           xmax={1}
           id="stopping-ratiox"
+        />
+      </div>
+
+      <div className="slider-control">
+        <label>FPS</label>
+
+        <Slider
+          onChange={({ x }) => setFPS(parseFloat(x.toFixed(2)))}
+          x={FPS}
+          xstep={1}
+          xmin={1}
+          xmax={90}
+          id="fps"
         />
       </div>
     </div>

@@ -30,7 +30,7 @@ export default function nosePose(WrappedComponent, options) {
     const [renderConfig, setRenderConfig] = useState(renderOptions);
 
     // const [display, setDisplay] = useState(true);
-    const webcamReference = useRef(null);
+    const webcamRef = useRef(null);
     // const canvasReference = useRef(null);
     const intervalTimerRef = useRef(null);
     const animationFrameRef = useRef(null);
@@ -44,18 +44,18 @@ export default function nosePose(WrappedComponent, options) {
         return;
       }
       if (
-        typeof webcamReference.current !== 'undefined' &&
-        webcamReference.current !== null &&
-        webcamReference.current.video.readyState === 4
+        typeof webcamRef.current !== 'undefined' &&
+        webcamRef.current !== null &&
+        webcamRef.current.video.readyState === 4
       ) {
         // Get Video Properties
-        const video = webcamReference.current.video;
-        const videoWidth = webcamReference.current.video.videoWidth;
-        const videoHeight = webcamReference.current.video.videoHeight;
+        const video = webcamRef.current.video;
+        const videoWidth = webcamRef.current.video.videoWidth;
+        const videoHeight = webcamRef.current.video.videoHeight;
 
         // Set video width
-        webcamReference.current.video.width = videoWidth;
-        webcamReference.current.video.height = videoHeight;
+        webcamRef.current.video.width = videoWidth;
+        webcamRef.current.video.height = videoHeight;
 
         // Set canvas width
         // canvasReference.current.width = videoWidth;
@@ -209,6 +209,8 @@ export default function nosePose(WrappedComponent, options) {
       unitSquarePositionRef,
       configure,
       configs: { render: renderConfig, model: modelConfig },
+      webcamRef,
+      currentPredictionRef,
     };
 
     return (
@@ -226,7 +228,7 @@ export default function nosePose(WrappedComponent, options) {
           }}
         >
           <Webcam
-            ref={webcamReference}
+            ref={webcamRef}
             audio={false}
             style={{
               visibility: 'hidden',

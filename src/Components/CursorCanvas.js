@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 
 // const stoppingRatio = 0.2; // area within which to no movement
 
-export default function Canvas({
+export default function CursorCanvas({
   unitCirclePositionRef,
   unitSquarePositionRef,
   speed,

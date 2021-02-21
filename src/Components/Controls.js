@@ -8,6 +8,8 @@ export default function Controls({
   setSpeed,
   stoppingRatio,
   setStoppingRatio,
+  displayOptions,
+  setDisplayOptions,
 }) {
   // console.log('configsss', configs);
   // const [configs, setConfigs] = useState(configs);

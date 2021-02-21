@@ -84,6 +84,7 @@ export default function nosePose(WrappedComponent, options) {
         // console.log('loading model');
         let nosepose = new NosePose();
         let model = await nosepose.load();
+
         // console.log('model loaded');
         setModelLoaded(model);
       }
@@ -177,8 +178,9 @@ export default function nosePose(WrappedComponent, options) {
                   topLeft: [20, 140], // note: canvas is mirrored
                 });
 
+              // note: currentPredictionRef is not
+              console.log(currentPredictionRef.current);
               let { predictions, config } = currentPredictionRef.current;
-
               let { central_bounding, outer_bounding } = config;
 
               displayConfig.video &&

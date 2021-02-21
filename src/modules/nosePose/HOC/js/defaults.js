@@ -6,10 +6,10 @@ const DISPLAY_OPTIONS_DEFAULT = {
 
 const RENDER_OPTIONS_DEFAULT = {
   responsiveness: {
-    value: 0.2,
+    value: 0.08,
   },
   performance: {
-    fps: 30,
+    fps: 20,
   },
 };
 const MODEL_OPTIONS_DEFAULT = {

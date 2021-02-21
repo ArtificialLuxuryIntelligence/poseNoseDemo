@@ -153,7 +153,7 @@ export default function Controls({
           x={FPS}
           xstep={1}
           xmin={1}
-          xmax={90}
+          xmax={60}
           id="fps"
         />
       </div>

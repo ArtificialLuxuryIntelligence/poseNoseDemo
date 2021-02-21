@@ -4,7 +4,7 @@ import Canvas from './Canvas.js';
 import Controls from './Controls';
 
 const STOPPING_RATIO_DEFAULT = 0.5;
-const SPEED_DEFAULT = 12;
+const SPEED_DEFAULT = 8;
 
 function Demo({ nosePose }) {
   const {

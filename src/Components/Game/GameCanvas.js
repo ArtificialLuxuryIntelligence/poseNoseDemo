@@ -1,5 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { drawJoystick, updatePosition } from './../js/canvasDrawing';
+import {
+  drawJoystick,
+  updatePosition,
+  clearCanvas,
+} from './../js/canvasDrawing';
 
 // const stoppingRatio = 0.2; // area within which to no movement
 
@@ -14,7 +18,7 @@ export default function GameCanvas({
 
   useEffect(() => {
     const animationLoop = () => {
-
+      let tick = 0;
 
       const ctx = canvasRef.current.getContext('2d');
       canvasRef.current.width = window.innerWidth;
@@ -22,18 +26,17 @@ export default function GameCanvas({
       let canvasWidth = ctx.canvas.offsetWidth;
       let canvasHeight = ctx.canvas.offsetHeight;
       let canvasDimensions = [canvasWidth, canvasHeight];
-      
+
       let position = [canvasWidth / 2, canvasHeight / 2];
-
-
+      let shots = [];
 
       const loop = () => {
+        tick++;
         // Set canvas width
         canvasRef.current.width = window.innerWidth;
         canvasRef.current.height = window.innerHeight;
 
         //Render to canvas
-
         let vector = unitCirclePositionRef.current;
         if (vector) {
           position = updatePosition(
@@ -43,7 +46,30 @@ export default function GameCanvas({
             canvasDimensions,
             speed
           );
-          updateCanvas(position, vector, stoppingRatio, ctx);
+          let cursor = { position };
+
+          // updateCanvas(cursor, shots, vector, tick, stoppingRatio, ctx);
+
+          drawJoystick(vector, ctx, {
+            inputRadius: 1,
+            outputRadius: 50,
+            center: cursor.position,
+            stoppingRatio,
+          });
+
+          shots = updateShots(shots);
+          drawShots(shots, ctx);
+
+          if (tick % 10 === 0) {
+            fireShot(cursor.position, vector, 18, shots, {
+              inputRadius: 1,
+              outputRadius: 50,
+            });
+          }
+
+          // if (shots.length) {
+          //   console.log(shots[0].position);
+          // }
         }
 
         animationFrameRef.current = requestAnimationFrame(loop);
@@ -80,22 +106,54 @@ export default function GameCanvas({
   );
 }
 
-const updateCanvas = (position, vector, stoppingRatio, ctx) => {
-  const [x, y] = position;
+const updateCanvas = (cursor, shots, vector, tick, stoppingRatio, ctx) => {
+  // console.log(tick);
+  // tick = 0;
+  clearCanvas(ctx);
+};
 
-  // Render generic circle cursor
-  // console.log(x);
-
-  // ctx.beginPath();
-  // ctx.arc(x, y, 10, 0, 2 * Math.PI);
-  // ctx.fillStyle = 'purple';
-  // ctx.fill();
-
-  // Render fancy joystick 'cursor'
-  drawJoystick(vector, ctx, {
+const fireShot = (
+  position,
+  vector,
+  speed,
+  shots,
+  options = {
     inputRadius: 1,
-    outputRadius: 50,
-    center: position,
-    stoppingRatio,
+    outputRadius: 100,
+  }
+) => {
+  const [x, y] = vector;
+  const scaleFactor = options.outputRadius / options.inputRadius;
+  const [c_x, c_y] = position;
+  // get position of end of vector turret thing
+  let x_j = c_x - x * scaleFactor;
+  let y_j = c_y - y * scaleFactor;
+
+  shots.push({ position: [x_j, y_j], vector, speed });
+};
+
+const drawShots = (shots, ctx) => {
+  shots.forEach((shot) => {
+    const [x, y] = shot.position;
+    const [x_v, y_v] = shot.vector;
+
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, 2 * Math.PI);
+    ctx.fillStyle = 'purple';
+    ctx.fill();
   });
+};
+const updateShots = (shots) => {
+  let res = shots.map((shot) => {
+    const [x, y] = shot.position;
+    const [x_v, y_v] = shot.vector;
+    const speed = shot.speed;
+    let newPos = [x - x_v * speed, y - y_v * speed];
+
+    let res = { ...shot, position: newPos };
+    return res;
+  });
+
+  // console.log(res);
+  return res;
 };

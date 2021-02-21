@@ -160,13 +160,13 @@ const drawJoystick = (
   let x_j = c_x - x * scaleFactor;
   let y_j = c_y - y * scaleFactor;
 
-  //outer limit
+  //outer limit (outer circle)
   ctx.beginPath();
   ctx.arc(c_x, c_y, r, 0, 2 * Math.PI);
   ctx.fillStyle = 'blue';
   ctx.fill();
 
-  // stopping ratio
+  // stopping ratio (inner circle)
   ctx.beginPath();
   ctx.arc(c_x, c_y, stoppingRatio * r, 0, 2 * Math.PI);
   ctx.fillStyle = 'red';

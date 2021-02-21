@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import withNosePose from './../modules/nosePose/HOC/withNosePose.js';
+import withNosePoseAndDisplay from './../modules/nosePose/HOC/withNosePoseAndDisplay';
 import Canvas from './Canvas.js';
 import Controls from './Controls';
 
@@ -46,9 +47,9 @@ function Demo({ nosePose }) {
   );
 }
 
-export default withNosePose(
-  Demo,
-  { video: true, circleControl: true, squareControl: true }
+// export default withNosePose(Demo, {
+// });
 
-);
-
+export default withNosePoseAndDisplay(Demo, {
+  display: { video: true, circleControl: true, squareControl: true },
+});

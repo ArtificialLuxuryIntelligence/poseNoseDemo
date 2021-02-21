@@ -8,9 +8,9 @@ Currently using tensorflow [blazeface](https://github.com/tensorflow/tfjs-models
 ### Basic
 
 load and confure detection model
-`import FaceDetector from '../FaceDetector/FaceDetector.js';`
-`let faceDetector = new FaceDetector();`
-`let model = await faceDetector.load();`
+`import NosePose from '../NosePose/index.js';`
+`let nose = new NosePose();`
+`let model = await nosepose.load();`
 `model.nosePose.configure(OPTIONS);`
 
 run detection loop

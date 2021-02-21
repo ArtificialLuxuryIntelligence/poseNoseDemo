@@ -1,4 +1,5 @@
 import * as blazeface from '@tensorflow-models/blazeface';
+import * as tf from '@tensorflow/tfjs';
 import { configPresets } from './presets';
 
 export default class NosePose {
@@ -9,7 +10,7 @@ export default class NosePose {
 
   async load() {
     this.model = await blazeface.load({ maxFaces: 1 });
-    return { nosePose: new NosePose(this.model) };
+    return new NosePose(this.model);
   }
 
   configure(config) {

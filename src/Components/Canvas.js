@@ -50,7 +50,7 @@ export default function Canvas({
     animationLoop();
 
     return () => {
-      console.log('clearing cursor animation frame');
+      // console.log('clearing cursor animation frame');
       cancelAnimationFrame(animationFrameRef.current);
     };
   }, [unitCirclePositionRef, unitSquarePositionRef, speed, stoppingRatio]);

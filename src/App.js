@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
-import nosePose from './modules/nosePose/Component/nosePose.js';
+import withNosePose from './modules/nosePose/HOC/withNosePose.js';
 import Canvas from './Components/Canvas.js';
 import Controls from './Components/Controls';
 
@@ -47,7 +47,7 @@ function App({ nosePose }) {
   );
 }
 
-export default nosePose(
+export default withNosePose(
   App,
   { video: true, circleControl: true, squareControl: true }
   // {
@@ -66,4 +66,4 @@ export default nosePose(
   // }
 );
 
-// export default nosePose(App);
+// export default withNosePose(App);

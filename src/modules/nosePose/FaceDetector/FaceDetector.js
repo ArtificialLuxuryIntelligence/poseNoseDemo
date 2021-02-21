@@ -1,7 +1,3 @@
-// To change model used in this library:
-// change: load function in FaceDetector
-// change: __getPredictionData in FaceVectorDetector
-
 import * as tf from '@tensorflow/tfjs';
 import * as blazeface from '@tensorflow-models/blazeface';
 
@@ -46,6 +42,7 @@ class FaceVectorDetector {
     let vectors = this.__getNosePointVectors(nose, center);
     let config = this.config;
 
+    // note estimateFaces predictions are also included here
     return { vectors, predictions: predictions[0], config };
   }
 

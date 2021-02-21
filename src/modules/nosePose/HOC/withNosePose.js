@@ -1,27 +1,27 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
+import FaceDetector from '../FaceDetector/FaceDetector.js';
+import Webcam from 'react-webcam';
 
 import {
   clearCanvas,
   drawCircleControl,
   drawSquareControl,
   drawBoundingFace,
-} from '../js/canvasDrawing';
+} from './js/canvasDrawing';
 
-import { stepToward } from '../js/geometry.js';
+import { stepToward } from './js/geometry.js';
 
 import {
   RENDER_OPTIONS_DEFAULT,
   DISPLAY_OPTIONS_DEFAULT,
   MODEL_OPTIONS_DEFAULT,
-} from '../js/defaults';
-import FaceDetector from '../FaceDetector/FaceDetector.js';
-import Webcam from 'react-webcam';
+} from './js/defaults';
 
 export default function nosePose(
   WrappedComponent,
   displayOptions,
-  renderOptions,
-  modelOptions
+  modelOptions,
+  renderOptions
 ) {
   displayOptions = Object.assign(DISPLAY_OPTIONS_DEFAULT, displayOptions);
   renderOptions = Object.assign(RENDER_OPTIONS_DEFAULT, renderOptions);

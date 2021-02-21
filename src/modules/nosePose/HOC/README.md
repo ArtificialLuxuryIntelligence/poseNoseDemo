@@ -1,9 +1,11 @@
 # Parameters
 
 wrapped component
-display options
-render options
-model options
+display options //optional
+render options //optional
+model options //optional
+
+(optional - see js/defaults.js)
 
 e.g.
 `export default withNosePose(App,`

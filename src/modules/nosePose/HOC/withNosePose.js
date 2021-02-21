@@ -252,6 +252,7 @@ export default function nosePose(
             }}
           />
 
+          {/* This canvas/all display options will be removed in a later version */}
           <canvas
             ref={canvasReference}
             style={{

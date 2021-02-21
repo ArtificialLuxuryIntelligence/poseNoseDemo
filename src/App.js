@@ -7,12 +7,15 @@ import Controls from './Components/Controls';
 const STOPPING_RATIO_DEFAULT = 0.5;
 const SPEED_DEFAULT = 12;
 
-function App({
-  unitCirclePositionRef,
-  unitSquarePositionRef,
-  configure,
-  configs,
-}) {
+function App({ nosePose }) {
+  const {
+    unitCirclePositionRef,
+    unitSquarePositionRef,
+    configure,
+    configs,
+  } = nosePose;
+
+  // state for moving cursor
   const [speed, setSpeed] = useState(SPEED_DEFAULT);
   const [stoppingRatio, setStoppingRatio] = useState(STOPPING_RATIO_DEFAULT);
 

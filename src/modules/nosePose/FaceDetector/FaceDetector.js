@@ -1,3 +1,7 @@
+// To change model used in this library:
+// change: load function in FaceDetector
+// change: __getPredictionData in FaceVectorDetector
+
 import * as tf from '@tensorflow/tfjs';
 import * as blazeface from '@tensorflow-models/blazeface';
 
@@ -45,10 +49,6 @@ class FaceVectorDetector {
     return { vectors, predictions: predictions[0], config };
   }
 
-  // configure(config) {
-  //   this.config = Object.assign({ ...configPresets.normal }, config);
-  // }
-
   __getNosePointVectors(nose, center) {
     let central_bounding = this.config.central_bounding;
     let outer_bounding = this.config.outer_bounding;
@@ -77,7 +77,7 @@ class FaceVectorDetector {
     };
   }
 
-  // Helpers
+  // note: current only nose and center are used from this function
   __getPredictionData(prediction) {
     const topLeft = prediction.topLeft;
     const bottomRight = prediction.bottomRight;

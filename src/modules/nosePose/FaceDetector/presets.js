@@ -1,3 +1,5 @@
+// Presets for FaceDetector class
+
 const configPresets = {
   narrow: {
     central_bounding: { x: [-20, 20], y: [-30, 30] },

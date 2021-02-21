@@ -13,7 +13,6 @@ export default function Canvas({
 
   useEffect(() => {
     const animationLoop = () => {
-      // console.log(stoppingRatio);
       const ctx = canvasRef.current.getContext('2d');
       canvasRef.current.width = window.innerWidth;
       canvasRef.current.height = window.innerHeight;
@@ -51,7 +50,7 @@ export default function Canvas({
     animationLoop();
 
     return () => {
-      console.log('clearing animation frame');
+      console.log('clearing cursor animation frame');
       cancelAnimationFrame(animationFrameRef.current);
     };
   }, [unitCirclePositionRef, unitSquarePositionRef, speed, stoppingRatio]);
@@ -60,10 +59,7 @@ export default function Canvas({
     <canvas
       ref={canvasRef}
       style={{
-        position: 'absolute',
         position: 'fixed',
-
-        // border: '10px solid red',
         width: '100vw',
         height: '100vh',
 
@@ -93,11 +89,12 @@ const updatePosition = (
   let x_new = -x * speed + x_p;
   let y_new = -y * speed + y_p;
 
+  // Stop if within 'stopping ratio' *r
   let r = Math.sqrt(vector[0] ** 2 + vector[1] ** 2);
   if (r < stoppingRatio) {
     return prevPos;
   }
-  //canvas boundary conditions
+  // Canvas edge conditions
   if (x_new >= width) {
     x_new = 0;
   } else if (x_new <= 0) {

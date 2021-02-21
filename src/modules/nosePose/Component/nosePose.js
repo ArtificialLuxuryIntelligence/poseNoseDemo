@@ -14,7 +14,7 @@ import {
   DISPLAY_OPTIONS_DEFAULT,
   MODEL_OPTIONS_DEFAULT,
 } from '../js/defaults';
-import FaceDetector from '../js/faceDetector.js';
+import FaceDetector from '../FaceDetector/FaceDetector.js';
 import Webcam from 'react-webcam';
 
 export default function nosePose(
@@ -29,9 +29,10 @@ export default function nosePose(
 
   function AddDetection() {
     const [tfModel, setModelLoaded] = useState(null);
+
+    const [displayConfig, setDisplayConfig] = useState(displayOptions); // cannot be changed other than when wrapping component
     const [modelConfig, setModelConfig] = useState(modelOptions);
     const [renderConfig, setRenderConfig] = useState(renderOptions);
-    const [displayConfig, setDisplayConfig] = useState(displayOptions);
 
     const [display, setDisplay] = useState(true);
     const webcamReference = useRef(null);
@@ -78,7 +79,7 @@ export default function nosePose(
       }
     };
 
-    // configures  both the model options and the render options (triggers useEffect to actually update)
+    // configures  both the model options and the render options (triggers useEffect to actually update) [not display config]
     const configure = useCallback((config) => {
       // set cursor responsiveness, performance
       setRenderConfig((prev) => ({ ...prev, ...config.render }));
@@ -212,6 +213,14 @@ export default function nosePose(
       };
     }, [renderConfig, displayConfig]);
 
+    // accessible to wrapped component in nosePose prop
+    const props = {
+      unitCirclePositionRef,
+      unitSquarePositionRef,
+      configure,
+      configs: { render: renderConfig, model: modelConfig },
+    };
+
     return (
       <>
         <div
@@ -261,12 +270,7 @@ export default function nosePose(
           />
         </div>
 
-        <WrappedComponent
-          unitCirclePositionRef={unitCirclePositionRef}
-          unitSquarePositionRef={unitSquarePositionRef}
-          configure={configure}
-          configs={{ render: renderConfig, model: modelConfig }}
-        />
+        <WrappedComponent nosePose={props} />
       </>
     );
   }

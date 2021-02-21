@@ -1,32 +1,17 @@
-import * as tf from '@tensorflow/tfjs';
 import * as blazeface from '@tensorflow-models/blazeface';
-
 import { configPresets } from './presets';
 
-// Add custom property to existing face detection model (blazeface)
-
-export default class FaceDetector {
-  constructor() {
-    this.model = null;
+export default class NosePose {
+  constructor(model) {
+    this.model = model; // Note: original model still accessible in instance
+    this.config = configPresets.normal;
   }
 
   async load() {
     this.model = await blazeface.load({ maxFaces: 1 });
-
-    // add nosePose object to blazeface model
-    return Object.assign(this.model, {
-      nosePose: new FaceVectorDetector(this.model),
-    });
+    return { nosePose: new NosePose(this.model) };
   }
-}
 
-// Get a vector from face landmarks
-
-class FaceVectorDetector {
-  constructor(model) {
-    this.model = model;
-    this.config = configPresets.normal;
-  }
   configure(config) {
     this.config = Object.assign({ ...configPresets.normal }, config);
   }
@@ -36,13 +21,14 @@ class FaceVectorDetector {
     if (!predictions.length) {
       return false;
     }
+
     // Extract relevant data
     const { nose, center } = this.__getPredictionData(predictions[0]);
 
     let vectors = this.__getNosePointVectors(nose, center);
     let config = this.config;
 
-    // note estimateFaces predictions are also included here
+    // note estimateFaces complete *predictions* are also included here (DO NOT call it again!)
     return { vectors, predictions: predictions[0], config };
   }
 

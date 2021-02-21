@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import FaceDetector from '../FaceDetector/FaceDetector.js';
+import FaceDetector from '../NosePose/index.js';
 import Webcam from 'react-webcam';
 
 import {
@@ -42,10 +42,6 @@ export default function nosePose(
     const currentPredictionRef = useRef(null);
     const unitCirclePositionRef = useRef(null);
     const unitSquarePositionRef = useRef(null);
-
-    //layout
-
-    // const [innerDims, setInnerDims] = useState([0, 0]);
 
     // Sets currentPredictionRef to nosePose predictions
     const detectFace = async (model) => {
@@ -94,6 +90,7 @@ export default function nosePose(
         console.log('loading model');
         let faceDetector = new FaceDetector();
         let model = await faceDetector.load();
+        console.log(model);
         console.log('model loaded');
         setModelLoaded(model);
       }

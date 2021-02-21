@@ -1,37 +1,22 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import NosePose from '../NosePose/index.js';
+import NosePose from '../nosepose/index.js';
 import Webcam from 'react-webcam';
-
-import {
-  clearCanvas,
-  drawCircleControl,
-  drawSquareControl,
-  drawBoundingFace,
-} from './js/canvasDrawing';
 
 import { stepToward } from './js/geometry.js';
 
-import {
-  RENDER_OPTIONS_DEFAULT,
-  DISPLAY_OPTIONS_DEFAULT,
-  MODEL_OPTIONS_DEFAULT,
-} from './js/defaults';
+import { RENDER_OPTIONS_DEFAULT, MODEL_OPTIONS_DEFAULT } from './js/defaults';
 
 export default function nosePose(WrappedComponent, options) {
-  let displayOptions = Object.assign(DISPLAY_OPTIONS_DEFAULT, options.display);
   let renderOptions = Object.assign(RENDER_OPTIONS_DEFAULT, options.render);
   let modelOptions = Object.assign(MODEL_OPTIONS_DEFAULT, options.model);
 
   function AddDetection() {
     const [tfModel, setModelLoaded] = useState(null);
 
-    const [displayConfig, setDisplayConfig] = useState(displayOptions); // cannot be changed other than when wrapping component
     const [modelConfig, setModelConfig] = useState(modelOptions);
     const [renderConfig, setRenderConfig] = useState(renderOptions);
 
-    const [display, setDisplay] = useState(true);
-    const webcamReference = useRef(null);
-    const canvasReference = useRef(null);
+    const webcamRef = useRef(null);
     const intervalTimerRef = useRef(null);
     const animationFrameRef = useRef(null);
     const currentPredictionRef = useRef(null);
@@ -44,22 +29,18 @@ export default function nosePose(WrappedComponent, options) {
         return;
       }
       if (
-        typeof webcamReference.current !== 'undefined' &&
-        webcamReference.current !== null &&
-        webcamReference.current.video.readyState === 4
+        typeof webcamRef.current !== 'undefined' &&
+        webcamRef.current !== null &&
+        webcamRef.current.video.readyState === 4
       ) {
         // Get Video Properties
-        const video = webcamReference.current.video;
-        const videoWidth = webcamReference.current.video.videoWidth;
-        const videoHeight = webcamReference.current.video.videoHeight;
+        const video = webcamRef.current.video;
+        const videoWidth = webcamRef.current.video.videoWidth;
+        const videoHeight = webcamRef.current.video.videoHeight;
 
         // Set video width
-        webcamReference.current.video.width = videoWidth;
-        webcamReference.current.video.height = videoHeight;
-
-        // Set canvas width
-        canvasReference.current.width = videoWidth;
-        canvasReference.current.height = videoHeight;
+        webcamRef.current.video.width = videoWidth;
+        webcamRef.current.video.height = videoHeight;
 
         // Make Detections
         const prediction = await model.detect(video);
@@ -70,7 +51,7 @@ export default function nosePose(WrappedComponent, options) {
       }
     };
 
-    // configures both the model options and the render options (triggers useEffect to actually update) [not display config]
+    // configures both the model options and the render options (triggers useEffect to actually update)
     const configure = useCallback((config) => {
       // set cursor responsiveness, performance
       setRenderConfig((prev) => ({ ...prev, ...config.render }));
@@ -84,7 +65,6 @@ export default function nosePose(WrappedComponent, options) {
         // console.log('loading model');
         let nosepose = new NosePose();
         let model = await nosepose.load();
-
         // console.log('model loaded');
         setModelLoaded(model);
       }
@@ -95,12 +75,6 @@ export default function nosePose(WrappedComponent, options) {
     useEffect(() => {
       tfModel && tfModel.configure(modelConfig);
     }, [tfModel, modelConfig]);
-
-    // toggle display on load
-    useEffect(() => {
-      let display = Object.values(displayConfig).some((v) => v === true);
-      setDisplay(display);
-    }, [displayConfig]);
 
     // start model detection loop
     useEffect(() => {
@@ -123,8 +97,6 @@ export default function nosePose(WrappedComponent, options) {
     // start animation frame loop
     // used for interpolating model predictions and rendering display
     useEffect(() => {
-      let display = Object.values(displayConfig).some((v) => v === true);
-      setDisplay(display);
       // console.log('rerending animation');
 
       const animationLoop = () => {
@@ -158,39 +130,6 @@ export default function nosePose(WrappedComponent, options) {
             );
             prevSquarePos = newSquarePos;
             unitSquarePositionRef.current = prevSquarePos;
-
-            // -------------------render display
-            if (display) {
-              const ctx = canvasReference.current.getContext('2d');
-              clearCanvas(ctx);
-
-              displayConfig.circleControl &&
-                drawCircleControl(prevCirclePos, ctx, {
-                  inputRadius: 1,
-                  outputRadius: 50,
-                  center: [70, 70], // note: canvas is mirrored
-                });
-
-              displayConfig.squareControl &&
-                drawSquareControl(prevSquarePos, ctx, {
-                  inputDimensions: [1, 1],
-                  outputDimensions: [100, 100],
-                  topLeft: [20, 140], // note: canvas is mirrored
-                });
-
-              // note: currentPredictionRef is not
-              console.log(currentPredictionRef.current);
-              let { predictions, config } = currentPredictionRef.current;
-              let { central_bounding, outer_bounding } = config;
-
-              displayConfig.video &&
-                drawBoundingFace(
-                  central_bounding,
-                  outer_bounding,
-                  predictions,
-                  ctx
-                );
-            }
           }
 
           animationFrameRef.current = requestAnimationFrame(loop);
@@ -203,14 +142,16 @@ export default function nosePose(WrappedComponent, options) {
         // console.log('stopping animation');
         cancelAnimationFrame(animationFrameRef.current);
       };
-    }, [renderConfig, displayConfig]);
+    }, [renderConfig]);
 
-    // accessible to wrapped component in nosePose prop
+    //props  accessible to wrapped component in nosePose prop
     const props = {
       unitCirclePositionRef,
       unitSquarePositionRef,
       configure,
       configs: { render: renderConfig, model: modelConfig },
+      webcamRef,
+      currentPredictionRef,
     };
 
     return (
@@ -228,10 +169,10 @@ export default function nosePose(WrappedComponent, options) {
           }}
         >
           <Webcam
-            ref={webcamReference}
+            ref={webcamRef}
             audio={false}
             style={{
-              visibility: displayConfig.video ? 'auto' : 'hidden',
+              visibility: 'hidden',
               position: 'absolute',
               marginLeft: 'auto',
               left: 0,
@@ -239,22 +180,6 @@ export default function nosePose(WrappedComponent, options) {
               zindex: 2,
               width: '40vw',
               height: 'auto',
-              transform: 'scale(-1, 1)',
-            }}
-          />
-
-          {/* This canvas/all display options will be removed in a later version */}
-          <canvas
-            ref={canvasReference}
-            style={{
-              display: display ? 'auto' : 'none',
-              position: 'absolute',
-              marginLeft: 'auto',
-              left: 0,
-              right: 0,
-              textAlign: 'center',
-              zindex: 999,
-              width: '40vw',
               transform: 'scale(-1, 1)',
             }}
           />

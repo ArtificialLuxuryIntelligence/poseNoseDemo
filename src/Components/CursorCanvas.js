@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { drawJoystick, updatePosition } from '../js/canvasDrawing';
 
 // const stoppingRatio = 0.2; // area within which to no movement
 
@@ -50,7 +51,7 @@ export default function CursorCanvas({
     animationLoop();
 
     return () => {
-      // console.log('clearing cursor animation frame');
+      console.log('clearing cursor animation frame');
       cancelAnimationFrame(animationFrameRef.current);
     };
   }, [unitCirclePositionRef, unitSquarePositionRef, speed, stoppingRatio]);
@@ -76,38 +77,6 @@ export default function CursorCanvas({
   );
 }
 
-const updatePosition = (
-  vector,
-  prevPos,
-  stoppingRatio,
-  canvasDimensions,
-  speed
-) => {
-  const [width, height] = canvasDimensions;
-  const [x, y] = vector;
-  const [x_p, y_p] = prevPos;
-  let x_new = -x * speed + x_p;
-  let y_new = -y * speed + y_p;
-
-  // Stop if within 'stopping ratio' *r
-  let r = Math.sqrt(vector[0] ** 2 + vector[1] ** 2);
-  if (r < stoppingRatio) {
-    return prevPos;
-  }
-  // Canvas edge conditions
-  if (x_new >= width) {
-    x_new = 0;
-  } else if (x_new <= 0) {
-    x_new = width;
-  }
-  if (y_new >= height) {
-    y_new = 0;
-  } else if (y_new <= 0) {
-    y_new = height;
-  }
-  return [x_new, y_new];
-};
-
 const updateCanvas = (position, vector, stoppingRatio, ctx) => {
   const [x, y] = position;
 
@@ -126,49 +95,4 @@ const updateCanvas = (position, vector, stoppingRatio, ctx) => {
     center: position,
     stoppingRatio,
   });
-};
-
-const drawJoystick = (
-  vector,
-  ctx,
-  options = {
-    inputRadius: 1,
-    outputRadius: 100,
-    center: [300, 300],
-    stoppingRatio: 0,
-  }
-) => {
-  const [x, y] = vector;
-  const scaleFactor = options.outputRadius / options.inputRadius;
-  const [c_x, c_y] = options.center;
-  const { outputRadius: r, stoppingRatio } = options;
-  let x_j = c_x - x * scaleFactor;
-  let y_j = c_y - y * scaleFactor;
-
-  //outer limit
-  ctx.beginPath();
-  ctx.arc(c_x, c_y, r, 0, 2 * Math.PI);
-  ctx.fillStyle = 'blue';
-  ctx.fill();
-
-  // stopping ratio
-  ctx.beginPath();
-  ctx.arc(c_x, c_y, stoppingRatio * r, 0, 2 * Math.PI);
-  ctx.fillStyle = 'red';
-  ctx.fill();
-
-  //vector tip
-  ctx.beginPath();
-  ctx.arc(x_j, y_j, 8, 0, 2 * Math.PI);
-  ctx.fillStyle = 'white';
-  ctx.fill();
-
-  // line to vector
-  ctx.strokeStyle = 'white';
-  ctx.lineWidth = 5;
-  ctx.lineCap = 'round';
-  ctx.beginPath();
-  ctx.moveTo(c_x, c_y);
-  ctx.lineTo(x_j, y_j);
-  ctx.stroke();
 };

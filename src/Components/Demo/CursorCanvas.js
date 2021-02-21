@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { drawJoystick, updatePosition } from '../js/canvasDrawing';
+import { drawJoystick, updatePosition } from './../js/canvasDrawing';
 
 // const stoppingRatio = 0.2; // area within which to no movement
 

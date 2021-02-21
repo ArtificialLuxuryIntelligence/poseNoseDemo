@@ -142,7 +142,7 @@ function clearCanvas(ctx) {
   ctx.clearRect(0, 0, w, h);
 }
 
-// cursor contrlol
+// cursor control
 const drawJoystick = (
   vector,
   ctx,

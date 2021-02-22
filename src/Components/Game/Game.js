@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import GameCanvas from './GameCanvas.js';
 
-
-const STOPPING_RATIO_DEFAULT = 0.25;
-const SPEED_DEFAULT = 10;
+const STOPPING_RATIO_DEFAULT = 0.55;
+const SPEED_DEFAULT = 6;
 
 export default function Game({ nosePose }) {
   const {

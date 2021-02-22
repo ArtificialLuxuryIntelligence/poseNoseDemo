@@ -1,5 +1,5 @@
 import React from 'react';
-import Demo from './Components/Demo/Demo.js';
+import Config from './Components/Config/Config.js';
 import Game from './Components/Game/Game.js';
 import withNosePose from './modules/react-with-nosepose/withNosePose.js';
 

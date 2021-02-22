@@ -1,8 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import ShipGame from './../js/ShipGame';
-import {
-  updatePosition,
-} from './../js/canvasDrawing';
+import { updatePosition } from './../js/canvasDrawing';
+import BlasterGame from '../js/BlasterGame';
 
 // const stoppingRatio = 0.2; // area within which to no movement
 
@@ -27,6 +26,7 @@ export default function GameCanvas({
 
       let tick = 0;
       let shipGame = new ShipGame(ctx);
+      // let blasterGame = new BlasterGame(ctx);
       let position = [canvasWidth / 2, canvasHeight / 2];
 
       const loop = () => {
@@ -36,10 +36,12 @@ export default function GameCanvas({
         canvasRef.current.height = window.innerHeight;
 
         //Render to canvas
-        let vector = unitCirclePositionRef.current;
-        if (vector) {
+        let circleVector = unitCirclePositionRef.current;
+        let squareVector = unitSquarePositionRef.current;
+
+        if (circleVector) {
           position = updatePosition(
-            vector,
+            circleVector,
             position,
             stoppingRatio,
             canvasDimensions,
@@ -47,7 +49,8 @@ export default function GameCanvas({
           );
           let cursor = { position };
 
-          shipGame.updateCanvas(cursor, vector, stoppingRatio, tick);
+          shipGame.updateCanvas(cursor, circleVector, stoppingRatio, tick);
+          // blasterGame.updateCanvas(squareVector, tick);
         }
 
         animationFrameRef.current = requestAnimationFrame(loop);

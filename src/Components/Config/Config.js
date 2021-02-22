@@ -6,7 +6,7 @@ import OverlayCanvas from './OverlayCanvas.js';
 const STOPPING_RATIO_DEFAULT = 0.35;
 const SPEED_DEFAULT = 8;
 
-export default function Demo({ nosePose }) {
+export default function Config({ nosePose }) {
   const {
     unitCirclePositionRef,
     unitSquarePositionRef,
@@ -27,7 +27,7 @@ export default function Demo({ nosePose }) {
 
   return (
     <div
-      className="Demo"
+      className="Config"
       style={{
         minHeight: '100vh',
         // display: 'flex',
@@ -59,8 +59,5 @@ export default function Demo({ nosePose }) {
   );
 }
 
-
-
-// export default withNosePoseAndDisplay(Demo, {
 //   display: { video: true, circleControl: true, squareControl: true },
 // });

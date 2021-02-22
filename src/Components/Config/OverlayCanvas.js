@@ -5,7 +5,7 @@ import {
   drawCircleControl,
   drawSquareControl,
   drawBoundingFace,
-} from './../js/canvasDrawing.js';
+} from '../js/canvasDrawing.js';
 
 export default function OverlayCanvas({ nosePose, displayOptions }) {
   const {

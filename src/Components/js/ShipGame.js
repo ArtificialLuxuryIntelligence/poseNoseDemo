@@ -143,7 +143,7 @@ export default class ShipGame {
     const [x, y] = target.position;
     this.ctx.beginPath();
     this.ctx.arc(x, y, target.radius, 0, 2 * Math.PI);
-    this.ctx.fillStyle = 'purple';
+    this.ctx.fillStyle = 'green';
     this.ctx.fill();
   };
   __updateTarget = (target) => {

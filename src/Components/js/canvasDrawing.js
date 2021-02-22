@@ -163,13 +163,13 @@ const drawJoystick = (
   //outer limit (outer circle)
   ctx.beginPath();
   ctx.arc(c_x, c_y, r, 0, 2 * Math.PI);
-  ctx.fillStyle = 'blue';
+  ctx.fillStyle = 'rgba(0,0,255,0.6)';
   ctx.fill();
 
   // stopping ratio (inner circle)
   ctx.beginPath();
   ctx.arc(c_x, c_y, stoppingRatio * r, 0, 2 * Math.PI);
-  ctx.fillStyle = 'red';
+  ctx.fillStyle = 'rgba(255,0,0,0.7)';
   ctx.fill();
 
   //vector tip

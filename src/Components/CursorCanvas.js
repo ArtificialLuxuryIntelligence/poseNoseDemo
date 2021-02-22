@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { drawJoystick, updatePosition } from '../js/canvasDrawing';
+import { drawJoystick, updatePosition } from './js/canvasDrawing';
 
 // const stoppingRatio = 0.2; // area within which to no movement
 
@@ -13,16 +13,26 @@ export default function CursorCanvas({
   const animationFrameRef = useRef(null);
 
   useEffect(() => {
+    let position;
+    function spaceListener(e) {
+      if (e.keyCode === 32) {
+        e.preventDefault();
+        clickAtPosition(position, canvasRef.current);
+      }
+    }
     const animationLoop = () => {
       const ctx = canvasRef.current.getContext('2d');
       canvasRef.current.width = window.innerWidth;
       canvasRef.current.height = window.innerHeight;
-
       let canvasWidth = ctx.canvas.offsetWidth;
       let canvasHeight = ctx.canvas.offsetHeight;
-
-      let position = [canvasWidth / 2, canvasHeight / 2];
       let canvasDimensions = [canvasWidth, canvasHeight];
+
+      // Set initial cursor position
+      position = [canvasWidth / 2, canvasHeight / 2];
+
+      // Add click at position
+      document.body.addEventListener('keyup', spaceListener);
 
       const loop = () => {
         // Set canvas width
@@ -40,6 +50,14 @@ export default function CursorCanvas({
             canvasDimensions,
             speed
           );
+
+          // if (position[1] < 50) {
+          //   console.log('top');
+          // }
+          // if (position[1] > canvasRef.current.height - 50) {
+          //   console.log('bottom');
+          // }
+
           updateCanvas(position, vector, stoppingRatio, ctx);
         }
 
@@ -51,8 +69,12 @@ export default function CursorCanvas({
     animationLoop();
 
     return () => {
+      // clear animation frame
       console.log('clearing cursor animation frame');
       cancelAnimationFrame(animationFrameRef.current);
+
+      //remove listener
+      document.body.removeEventListener('keyup', spaceListener);
     };
   }, [unitCirclePositionRef, unitSquarePositionRef, speed, stoppingRatio]);
 
@@ -95,4 +117,14 @@ const updateCanvas = (position, vector, stoppingRatio, ctx) => {
     center: position,
     stoppingRatio,
   });
+};
+
+const clickAtPosition = (position, canvas, mirrored = true) => {
+  let [x, y] = position;
+  // canvas is mirror (scale(-1,1))
+  if (mirrored) {
+    x = canvas.width - x;
+  }
+  let el = document.elementFromPoint(x, y);
+  el.click();
 };

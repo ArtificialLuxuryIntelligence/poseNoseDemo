@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import CursorCanvas from './CursorCanvas.js';
+import CursorCanvas from './../CursorCanvas.js';
 import Controls from './Controls';
 import OverlayCanvas from './OverlayCanvas.js';
 

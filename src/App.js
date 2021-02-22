@@ -1,13 +1,15 @@
 import React from 'react';
 import Config from './Components/Config/Config.js';
 import Game from './Components/Game/Game.js';
+import WelcomeDemo from './Components/WelcomeDemo/WelcomeDemo.js';
 import withNosePose from './modules/react-with-nosepose/withNosePose.js';
 
 function App({ nosePose }) {
   return (
     <div>
-      {/* <Demo nosePose={nosePose} /> */}
-      <Game nosePose={nosePose} />
+      {/* <Config nosePose={nosePose} /> */}
+      {/* <Game nosePose={nosePose} /> */}
+      <WelcomeDemo nosePose={nosePose}/>
     </div>
   );
 }

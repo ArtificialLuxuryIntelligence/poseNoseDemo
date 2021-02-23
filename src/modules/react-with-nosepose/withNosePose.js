@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import NosePose from '../nosepose/index.js';
+import NosePose from '../nosepose/nosePose.js';
 import Webcam from 'react-webcam';
 
 import { stepToward } from './js/geometry.js';
@@ -64,9 +64,10 @@ export default function nosePose(WrappedComponent, options) {
       async function loadModel() {
         // console.log('loading model');
         let nosepose = new NosePose();
-        let model = await nosepose.load();
+        await nosepose.load();
+        setModelLoaded(nosepose);
         // console.log('model loaded');
-        setModelLoaded(model);
+        // setModelLoaded(model);
       }
       loadModel();
     }, []);

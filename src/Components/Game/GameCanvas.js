@@ -1,16 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
 import ShipGame from './../js/ShipGame';
-import { updatePosition } from './../js/canvasDrawing';
 import BlasterGame from '../js/BlasterGame';
+import { updatePosition } from './../js/canvasDrawing';
 
-// const stoppingRatio = 0.2; // area within which to no movement
-
-export default function GameCanvas({
-  unitCirclePositionRef,
-  unitSquarePositionRef,
-  speed,
-  stoppingRatio,
-}) {
+export default function GameCanvas({ outputRef, speed, stoppingRatio }) {
   const canvasRef = useRef(null);
   const animationFrameRef = useRef(null);
 
@@ -36,9 +29,8 @@ export default function GameCanvas({
         canvasRef.current.height = window.innerHeight;
 
         //Render to canvas
-        let circleVector = unitCirclePositionRef.current;
-        let squareVector = unitSquarePositionRef.current;
-
+        let circleVector = outputRef.current?.vectors?.vector_normalized_circle;
+        let squareVector = outputRef.current?.vectors?.vector_normalized_square;
         if (circleVector) {
           position = updatePosition(
             circleVector,
@@ -64,7 +56,7 @@ export default function GameCanvas({
       console.log('clearing cursor animation frame');
       cancelAnimationFrame(animationFrameRef.current);
     };
-  }, [unitCirclePositionRef, unitSquarePositionRef, speed, stoppingRatio]);
+  }, [outputRef, speed, stoppingRatio]);
 
   return (
     <canvas
@@ -73,7 +65,6 @@ export default function GameCanvas({
         position: 'fixed',
         width: '100vw',
         height: '100vh',
-
         top: 0,
         left: 0,
         right: 0,

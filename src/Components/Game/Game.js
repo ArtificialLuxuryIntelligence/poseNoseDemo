@@ -1,18 +1,11 @@
 import React, { useState } from 'react';
 import GameCanvas from './GameCanvas.js';
 
-const STOPPING_RATIO_DEFAULT = 0.55;
+const STOPPING_RATIO_DEFAULT = 0.35;
 const SPEED_DEFAULT = 6;
 
 export default function Game({ nosePose }) {
-  const {
-    unitCirclePositionRef,
-    unitSquarePositionRef,
-    configure,
-    configs,
-    webcamRef,
-    currentPredictionRef,
-  } = nosePose;
+  const { outputRef, configure, configs, webcamRef } = nosePose;
 
   // state for moving cursor
   const [speed, setSpeed] = useState(SPEED_DEFAULT);
@@ -27,15 +20,14 @@ export default function Game({ nosePose }) {
     <div
       className="Demo"
       style={{
-        minHeight: '100vh',
+        height: '100vh',
         // display: 'flex',
       }}
     >
-      <h1>Game</h1>
+      {/* <h1>Game</h1> */}
 
       <GameCanvas
-        unitSquarePositionRef={unitSquarePositionRef}
-        unitCirclePositionRef={unitCirclePositionRef}
+        outputRef={outputRef}
         speed={speed}
         stoppingRatio={stoppingRatio}
       />

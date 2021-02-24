@@ -65,7 +65,6 @@ export default function CursorCanvas({ outputRef, speed, stoppingRatio }) {
 
     return () => {
       // clear animation frame
-      console.log('clearing cursor animation frame');
       cancelAnimationFrame(animationFrameRef.current);
 
       //remove listener

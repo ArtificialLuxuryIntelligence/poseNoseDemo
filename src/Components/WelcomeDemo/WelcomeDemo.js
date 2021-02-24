@@ -6,21 +6,14 @@ const SPEED = 6;
 const STOPPINGR = 0.3;
 
 export default function WelcomeDemo({ nosePose }) {
-  const {
-    unitCirclePositionRef,
-    unitSquarePositionRef,
-    configure,
-    configs,
-    webcamRef,
-    currentPredictionRef,
-  } = nosePose;
+  const { outputRef, configure, configs, webcamRef } = nosePose;
 
   const [shift, setShift] = useState(true);
   return (
     <div>
       <CursorCanvas
-        unitSquarePositionRef={unitSquarePositionRef}
-        unitCirclePositionRef={unitCirclePositionRef}
+        webcamRef={webcamRef}
+        outputRef={outputRef}
         speed={SPEED}
         stoppingRatio={STOPPINGR}
       />

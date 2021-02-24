@@ -1,3 +1,4 @@
+const DEPTH = 1.5; // corners are behind you
 let SHIFT = 150;
 
 export default class BlasterGame {
@@ -21,8 +22,8 @@ export default class BlasterGame {
 
     let [x, y] = vector;
     let { h, w } = this.canvasDims;
-    let b1 = { width: 1200, height: 900 };
-    let b2 = { width: 400, height: 300 };
+    let b1 = { width: w * DEPTH, height: h * DEPTH };
+    let b2 = { width: w / 3, height: h / 3 };
 
     let c = [w / 2, h / 2];
     //static window
@@ -38,8 +39,10 @@ export default class BlasterGame {
 
     // moving parallax window
     //shift center
+
+    const shift = w / 6;
     let c2 = c.map((val, i) => {
-      return val - vector[i] * SHIFT;
+      return val - vector[i] * shift;
     });
 
     let b2_corners = [

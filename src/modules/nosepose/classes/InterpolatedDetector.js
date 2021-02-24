@@ -1,6 +1,6 @@
-import { mergeDeep } from './helpers';
+import { mergeDeep } from './../helpers/helpers';
 import Interpolater from './Interpolater';
-import { defaults } from './defaults';
+import { defaults } from './../defaults';
 //
 
 // params

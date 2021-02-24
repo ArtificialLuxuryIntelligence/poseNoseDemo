@@ -35,13 +35,12 @@ export default class Interpolater {
         const [p1, p2] = [this.slowPromise(val), this.__timeoutPromise()];
         let p = await Promise.all([p1, p2]);
         v = p[0];
-
         this.resolved = true;
-        this.slow = v;
+        v && (this.slow = v);
       } else {
         v = await this.slowPromise(val);
         this.resolved = true;
-        this.slow = v;
+        v && (this.slow = v);
       }
     }
   }

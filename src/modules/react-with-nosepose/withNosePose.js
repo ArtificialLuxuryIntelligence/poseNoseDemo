@@ -1,33 +1,30 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
-import NosePose from '../nosepose/nosePose.js';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import Webcam from 'react-webcam';
+import { defaults } from '../nosepose/defaults';
+import { mergeDeep } from '../nosepose/helpers/helpers';
 
-import { stepToward } from './js/geometry.js';
+import nosePose from '../nosepose/index';
 
-import { RENDER_OPTIONS_DEFAULT, MODEL_OPTIONS_DEFAULT } from './js/defaults';
-
-export default function nosePose(WrappedComponent, options) {
-  let renderOptions = Object.assign(RENDER_OPTIONS_DEFAULT, options.render);
-  let modelOptions = Object.assign(MODEL_OPTIONS_DEFAULT, options.model);
-
+export default function withNosePose(WrappedComponent) {
   function AddDetection() {
-    const [tfModel, setModelLoaded] = useState(null);
+    let webcamRef = useRef();
+    let animationFrameRef = useRef();
+    let [detector, setDetector] = useState(null);
+    let [configs, setConfigs] = useState(defaults);
+    let outputRef = useRef(null);
 
-    const [modelConfig, setModelConfig] = useState(modelOptions);
-    const [renderConfig, setRenderConfig] = useState(renderOptions);
+    const loadDetector = useCallback(async () => {
+      // setup interpolation
 
-    const webcamRef = useRef(null);
-    const intervalTimerRef = useRef(null);
-    const animationFrameRef = useRef(null);
-    const currentPredictionRef = useRef(null);
-    const unitCirclePositionRef = useRef(null);
-    const unitSquarePositionRef = useRef(null);
+      // load vector detector
+      let detector = nosePose(configs);
+      await detector.load();
 
-    // Sets currentPredictionRef to nosePose predictions
-    const detect = async (model) => {
-      if (!model) {
-        return;
-      }
+      setDetector(detector);
+      console.log('Detector loaded!', detector);
+    }, []);
+
+    const detect = () => {
       if (
         typeof webcamRef.current !== 'undefined' &&
         webcamRef.current !== null &&
@@ -43,98 +40,49 @@ export default function nosePose(WrappedComponent, options) {
         webcamRef.current.video.height = videoHeight;
 
         // Make Detections
-        const prediction = await model.detect(video);
+        const prediction = detector.detect(video);
         // console.log(prediction);
 
         // Set prediction to Ref
-        currentPredictionRef.current = prediction;
+        outputRef.current = prediction;
       }
     };
 
-    // configures both the model options and the render options (triggers useEffect to actually update)
-    const configure = useCallback((config) => {
-      // set cursor responsiveness, performance
-      setRenderConfig((prev) => ({ ...prev, ...config.render }));
-      // set central_bounding and outer_bounding
-      setModelConfig((prev) => ({ ...prev, ...config.model }));
-    }, []);
+    // keep configs state in sync with detector.
+    // incomplete (nested) configuration is possible here thanks to deep merge.
+    // e.g.
+    // configure({ interpolater: { fps: 10 } });
 
-    // load  model
-    useEffect(() => {
-      async function loadModel() {
-        // console.log('loading model');
-        let nosepose = new NosePose();
-        await nosepose.load();
-        setModelLoaded(nosepose);
-        // console.log('model loaded');
-        // setModelLoaded(model);
+    const configure = (configurations) => {
+      let newConfigs = mergeDeep({}, configs, configurations);
+      setConfigs(newConfigs);
+      if (detector) {
+        detector.configure(newConfigs);
       }
-      loadModel();
-    }, []);
+    };
 
-    // update modelConfig
     useEffect(() => {
-      tfModel && tfModel.configure(modelConfig);
-    }, [tfModel, modelConfig]);
+      if (detector) {
+        detector.configure(configs);
+      }
+    }, [configs, detector]);
 
-    // start model detection loop
+    // Load Detector
     useEffect(() => {
-      const loopDectection = async () => {
-        // console.log('detection looping');
-        intervalTimerRef.current = setInterval(async () => {
-          //   console.log('detection looping');
-          detect(tfModel);
-        }, 1000 / renderConfig.performance.fps);
-      };
-      // console.log('starting model detection loop');
-      loopDectection();
+      loadDetector();
+    }, [loadDetector]);
 
-      return () => {
-        // console.log('stopping model detection loop');
-        clearInterval(intervalTimerRef.current);
-      };
-    }, [tfModel, renderConfig.performance.fps]);
-
-    // start animation frame loop
-    // used for interpolating model predictions and rendering display
+    // Detection animation loop
     useEffect(() => {
-      // console.log('rerending animation');
-
+      // console.log('rerendering animation');
       const animationLoop = () => {
         // console.log('starting animation');
 
-        let prevCirclePos = [0, 0];
-        let prevSquarePos = [0, 0];
-
         const loop = () => {
-          if (currentPredictionRef.current) {
-            // -------------------interpolate
-            let actualCirclePos =
-              currentPredictionRef.current.vectors.vector_normalized_circle;
-            let actualSquarePos =
-              currentPredictionRef.current.vectors.vector_normalized_square;
-
-            //circle position
-            let newCirclePos = stepToward(
-              prevCirclePos,
-              actualCirclePos,
-              renderConfig.responsiveness.value
-            );
-            prevCirclePos = newCirclePos;
-            unitCirclePositionRef.current = prevCirclePos;
-
-            // square position
-            let newSquarePos = stepToward(
-              prevSquarePos,
-              actualSquarePos,
-              renderConfig.responsiveness.value
-            );
-            prevSquarePos = newSquarePos;
-            unitSquarePositionRef.current = prevSquarePos;
-          }
-
+          detect();
           animationFrameRef.current = requestAnimationFrame(loop);
         };
+
         loop();
       };
       animationLoop();
@@ -143,53 +91,35 @@ export default function nosePose(WrappedComponent, options) {
         // console.log('stopping animation');
         cancelAnimationFrame(animationFrameRef.current);
       };
-    }, [renderConfig]);
+    }, [detector]);
 
-    //props  accessible to wrapped component in nosePose prop
     const props = {
-      unitCirclePositionRef,
-      unitSquarePositionRef,
-      configure,
-      configs: { render: renderConfig, model: modelConfig },
+      outputRef,
       webcamRef,
-      currentPredictionRef,
+      configs,
+      configure,
     };
 
     return (
-      <>
-        <div
-          className="nose-pose"
+      <div>
+        <Webcam
+          ref={webcamRef}
+          audio={false}
           style={{
-            pointerEvents: 'none',
-            position: 'fixed',
-            display: 'flex',
-            top: 0,
+            visibility: 'hidden',
+            position: 'absolute',
+            marginLeft: 'auto',
             left: 0,
             right: 0,
-            height: '100vh',
+            zindex: 2,
+            width: '40vw',
+            height: 'auto',
+            transform: 'scale(-1, 1)',
           }}
-        >
-          <Webcam
-            ref={webcamRef}
-            audio={false}
-            style={{
-              visibility: 'hidden',
-              position: 'absolute',
-              marginLeft: 'auto',
-              left: 0,
-              right: 0,
-              zindex: 2,
-              width: '40vw',
-              height: 'auto',
-              transform: 'scale(-1, 1)',
-            }}
-          />
-        </div>
-
+        />
         <WrappedComponent nosePose={props} />
-      </>
+      </div>
     );
   }
-
   return AddDetection;
 }

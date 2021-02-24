@@ -1,5 +1,5 @@
-import InterpolatedDetector from './InterpolatedDetector';
-import NoseVectorDetector from './NoseVectorDetector';
+import InterpolatedDetector from './classes/InterpolatedDetector';
+import NoseVectorDetector from './classes/NoseVectorDetector';
 
 export default function nosePose(configuration) {
   let detector = new NoseVectorDetector();

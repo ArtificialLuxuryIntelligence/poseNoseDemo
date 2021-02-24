@@ -10,9 +10,9 @@ function App({ nosePose }) {
     <div>
       {/* <Config nosePose={nosePose} /> */}
       {/* <Game nosePose={nosePose} /> */}
-      <WelcomeDemo nosePose={nosePose} />
+      {/* <WelcomeDemo nosePose={nosePose} /> */}
 
-      {/* <InterpolateTest /> */}
+      <InterpolateTest />
     </div>
   );
 }

@@ -3,8 +3,7 @@ import Webcam from 'react-webcam';
 
 import { stepToward } from './../modules/react-with-nosepose/js/geometry.js';
 
-import InterpolatedDetector from './../modules/nosepose/InterpolatedDetector';
-import NoseVectorDetector from './../modules/nosepose/NoseVectorDetector';
+import nosePose from './../modules/nosepose/index';
 
 export default function InterpolateTest() {
   let webcamRef = useRef();
@@ -12,31 +11,29 @@ export default function InterpolateTest() {
   let animationFrameRef = useRef();
   let [detector, setDetector] = useState(null);
 
-  function stepTowardDetector(prevPredictions, currentPredictions) {
-    const { vectors } = currentPredictions;
-    const { vector_normalized_circle, vector_normalized_square } = vectors;
-
-    return {
-      ...currentPredictions,
-      vectors: {
-        ...currentPredictions.vectors,
-        vector_normalized_circle: stepToward(
-          prevPredictions.vectors.vector_normalized_square,
-          vector_normalized_circle
-        ),
-        vector_normalized_square: stepToward(
-          prevPredictions.vectors.vector_normalized_square,
-          vector_normalized_square
-        ),
-      },
-    };
-  }
-
   const loadDetector = useCallback(async () => {
-    // load vector detector
-    let detector = new NoseVectorDetector();
-
     // setup interpolation
+
+    // -------------------------------- optional configurations
+    function stepTowardDetector(prevPredictions, currentPredictions) {
+      const { vectors } = currentPredictions;
+      const { vector_normalized_circle, vector_normalized_square } = vectors;
+
+      return {
+        ...currentPredictions,
+        vectors: {
+          ...currentPredictions.vectors,
+          vector_normalized_circle: stepToward(
+            prevPredictions.vectors.vector_normalized_square,
+            vector_normalized_circle
+          ),
+          vector_normalized_square: stepToward(
+            prevPredictions.vectors.vector_normalized_square,
+            vector_normalized_square
+          ),
+        },
+      };
+    }
     const configs = {
       detector: {
         central_bounding: { x: [-20, 20], y: [-30, 15] },
@@ -57,13 +54,16 @@ export default function InterpolateTest() {
         stepToward: stepTowardDetector,
       },
     };
-    let smoothDetector = new InterpolatedDetector({
-      detector,
-      configs,
-    });
-    await smoothDetector.load();
-    setDetector(smoothDetector);
-    console.log('loaded!', smoothDetector);
+
+    // ----------------------------------------------------------------------------
+
+    // load vector detector
+
+    let detector = nosePose();
+    await detector.load();
+
+    setDetector(detector);
+    console.log('loaded!', detector);
   }, []);
 
   const detect = () => {

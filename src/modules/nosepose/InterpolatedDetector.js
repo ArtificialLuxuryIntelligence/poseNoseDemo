@@ -27,7 +27,7 @@ import Interpolater from './Interpolater';
 //   },
 
 export default class InterpolatedDetector {
-  constructor({ detector, configs }) {
+  constructor(configs, detector) {
     this.detector = detector;
     this.interpolater = null;
     this.configs = configs;
@@ -47,7 +47,7 @@ export default class InterpolatedDetector {
     );
   }
   configure(configs) {
-    //config detector/ config interpolator separated? so it doesnt get restarted every tiem? lets see..
+    //config detector/ config interpolator separated? so it doesnt get restarted every time? lets see..
 
     this.configs = configs; //TO DO object assign wiht defaults
     this.detector.configure(this.configs.detector);

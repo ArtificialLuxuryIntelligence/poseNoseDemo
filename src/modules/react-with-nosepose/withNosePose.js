@@ -1,9 +1,9 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import Webcam from 'react-webcam';
-import { defaults } from '../nosepose/defaults';
-import { mergeDeep } from '../nosepose/helpers/helpers';
+import { defaults } from '../nosepose/src/defaults';
+import { mergeDeep } from '../nosepose/src/helpers/helpers';
 
-import nosePose from '../nosepose/index';
+import nosePose from '../nosepose/src/index';
 
 export default function withNosePose(WrappedComponent) {
   function AddDetection() {

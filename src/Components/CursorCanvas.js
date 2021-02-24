@@ -3,12 +3,7 @@ import { drawJoystick, updatePosition } from './js/canvasDrawing';
 
 // const stoppingRatio = 0.2; // area within which to no movement
 
-export default function CursorCanvas({
-  unitCirclePositionRef,
-  unitSquarePositionRef,
-  speed,
-  stoppingRatio,
-}) {
+export default function CursorCanvas({ outputRef, speed, stoppingRatio }) {
   const canvasRef = useRef(null);
   const animationFrameRef = useRef(null);
 
@@ -41,7 +36,7 @@ export default function CursorCanvas({
 
         //Render to canvas
 
-        let vector = unitCirclePositionRef.current;
+        let vector = outputRef.current?.vectors?.vector_normalized_circle;
         if (vector) {
           position = updatePosition(
             vector,
@@ -76,7 +71,7 @@ export default function CursorCanvas({
       //remove listener
       document.body.removeEventListener('keyup', spaceListener);
     };
-  }, [unitCirclePositionRef, unitSquarePositionRef, speed, stoppingRatio]);
+  }, [outputRef, speed, stoppingRatio]);
 
   return (
     <canvas

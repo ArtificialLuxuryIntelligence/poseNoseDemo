@@ -12,8 +12,9 @@ export default class InterpolatedDetector {
     this.detector = detector;
     this.interpolater = null;
     this.configs = mergeDeep({}, defaults, configs);
-    // note : current implementation in react always provides a complete configuration object
-    // so any merge isnt really needed
+    // note : current implementation in react always provides a complete configuration object (mergeDeep alrady done)
+    // reason: react needs to hold the config state so that sliders etc work
+    // so  merge isnt really needed here (currently
   }
 
   async load() {

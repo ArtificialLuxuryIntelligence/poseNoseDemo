@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Controls from './Controls';
 import OverlayCanvas from './OverlayCanvas';
+import CursorCanvas from './../CursorCanvas';
 
 export default function ConfigPage({ nosePose }) {
   const [speed, setSpeed] = useState(5);
@@ -23,6 +24,11 @@ export default function ConfigPage({ nosePose }) {
     <div>
       <Controls props={props} />
       <OverlayCanvas nosePose={nosePose} />
+      <CursorCanvas
+        outputRef={outputRef}
+        speed={speed}
+        stoppingRatio={stoppingRatio}
+      />
     </div>
   );
 }

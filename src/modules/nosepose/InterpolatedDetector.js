@@ -1,5 +1,6 @@
+import { mergeDeep } from './helpers';
 import Interpolater from './Interpolater';
-import { configs } from './presets';
+import { defaults } from './defaults';
 //
 
 // params
@@ -10,30 +11,19 @@ export default class InterpolatedDetector {
   constructor(configs, detector) {
     this.detector = detector;
     this.interpolater = null;
-    this.configs = configs;
+    this.configs = mergeDeep(defaults, configs);
+    // note : current implementation in react always provides a complete configuration object
+    // so any merge isnt really needed
   }
 
   async load() {
     // load and set up detector
     await this.detector.load();
-    this.configure(configs);
+    this.configure(this.configs);
   }
 
   configure(configuration) {
-    let detectorConfigs = Object.assign(
-      {},
-      configs.detector,
-      configuration.detector
-    );
-    let interpolaterConfigs = Object.assign(
-      {},
-      configs.interpolater,
-      configuration.detector
-    );
-    this.configs = {
-      detector: detectorConfigs,
-      interpolater: interpolaterConfigs,
-    };
+    this.configs = mergeDeep(this.configs, configuration);
 
     //configure detector
     this.detector.configure(this.configs.detector);

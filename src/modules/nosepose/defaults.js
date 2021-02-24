@@ -1,6 +1,6 @@
 // Presets for FaceDetector class
 
-import { stepToward } from './../react-with-nosepose/js/geometry';
+import { stepToward } from '../react-with-nosepose/js/geometry';
 
 const configPresets = {
   narrow: {
@@ -37,7 +37,7 @@ function stepTowardDetector(prevPredictions, currentPredictions) {
   };
 }
 
-const configs = {
+const defaults = {
   detector: {
     central_bounding: { x: [-20, 20], y: [-30, 15] },
     outer_bounding: { x: [-50, 50], y: [-35, 35] },
@@ -58,4 +58,4 @@ const configs = {
   },
 };
 
-export { configPresets, configs };
+export { configPresets, defaults };

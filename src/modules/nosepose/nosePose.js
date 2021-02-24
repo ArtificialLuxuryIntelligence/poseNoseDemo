@@ -1,6 +1,6 @@
 import * as blazeface from '@tensorflow-models/blazeface';
 import * as tf from '@tensorflow/tfjs';
-import { configPresets } from './presets';
+import { configPresets } from './defaults';
 
 export default class NosePose {
   constructor(model) {

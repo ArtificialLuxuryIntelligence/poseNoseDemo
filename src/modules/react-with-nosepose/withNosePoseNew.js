@@ -1,14 +1,16 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import Webcam from 'react-webcam';
+import { defaults } from '../nosepose/defaults';
+import { mergeDeep } from '../nosepose/helpers';
 
-import nosePose from './../modules/nosepose/index';
+import nosePose from './../nosepose/index';
 
 export default function withNosePose(WrappedComponent) {
   function AddDetection() {
     let webcamRef = useRef();
     let animationFrameRef = useRef();
     let [detector, setDetector] = useState(null);
-    let [configs, setConfigs] = useState(null);
+    let [configs, setConfigs] = useState(defaults);
 
     let outputRef = useRef();
 
@@ -41,15 +43,27 @@ export default function withNosePose(WrappedComponent) {
 
         // Make Detections
         const prediction = detector.detect(video);
-        console.log(prediction);
+        // console.log(prediction);
 
         // Set prediction to Ref
         outputRef.current = prediction;
       }
     };
 
+    // keep configs state in sync with detector.
+    // incomplete (nested) configuration is possible here thanks to deep merge.
+    // e.g.
+    // configure({ interpolater: { fps: 10 } });
+    
+    const configure = (configurations) => {
+      let newConfigs = mergeDeep(configs, configurations);
+      setConfigs(newConfigs);
+    };
+
     useEffect(() => {
-      detector.configure(configs);
+      if (detector) {
+        detector.configure(configs);
+      }
     }, [configs, detector]);
 
     // Load Detector
@@ -81,6 +95,7 @@ export default function withNosePose(WrappedComponent) {
     const props = {
       outputRef,
       webcamRef,
+      configs,
       configure,
     };
 

@@ -17,7 +17,8 @@ const configPresets = {
   },
 };
 
-function stepTowardDetector(prevPredictions, currentPredictions) {
+// only change circle/square vectors
+function stepTowardDetector(prevPredictions, currentPredictions, sensitivity) {
   const { vectors } = currentPredictions;
   const { vector_normalized_circle, vector_normalized_square } = vectors;
 
@@ -26,12 +27,14 @@ function stepTowardDetector(prevPredictions, currentPredictions) {
     vectors: {
       ...currentPredictions.vectors,
       vector_normalized_circle: stepToward(
-        prevPredictions.vectors.vector_normalized_square,
-        vector_normalized_circle
+        prevPredictions.vectors.vector_normalized_circle,
+        vector_normalized_circle,
+        sensitivity
       ),
       vector_normalized_square: stepToward(
         prevPredictions.vectors.vector_normalized_square,
-        vector_normalized_square
+        vector_normalized_square,
+        sensitivity
       ),
     },
   };
@@ -43,7 +46,8 @@ const defaults = {
     outer_bounding: { x: [-50, 50], y: [-35, 35] },
   },
   interpolater: {
-    fps: 1,
+    fps: 15,
+    sensitivity: 0.04,
     initialVal: {
       vectors: {
         direction_word: '',

@@ -5,13 +5,14 @@
 // fps : frames per second for slowPromise to be called (leave as false if max fps for promise is desired)
 
 export default class Interpolater {
-  constructor(slowPromise, initialVal, stepToward, fps = false) {
+  constructor(slowPromise, initialVal, stepToward, stepArg, fps = false) {
     this.slowPromise = slowPromise;
     this.stepToward = stepToward;
     this.fast = initialVal; //updated every iteration call
     this.slow = initialVal; //updated only when promise resolves
     this.resolved = true;
     this.fps = fps;
+    this.stepArg = stepArg; // 3rd argument supplied to stepToward (after prev value and target value (aka this.fast & this.slow)
   }
 
   interpolate(val) {
@@ -20,7 +21,7 @@ export default class Interpolater {
     return this.fast;
   }
   __updateFast() {
-    this.fast = this.stepToward(this.fast, this.slow);
+    this.fast = this.stepToward(this.fast, this.slow, this.stepArg);
   }
   async __updateSlow(val) {
     if (!this.resolved) {

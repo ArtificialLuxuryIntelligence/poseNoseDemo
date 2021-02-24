@@ -11,7 +11,7 @@ export default class InterpolatedDetector {
   constructor(configs, detector) {
     this.detector = detector;
     this.interpolater = null;
-    this.configs = mergeDeep(defaults, configs);
+    this.configs = mergeDeep({}, defaults, configs);
     // note : current implementation in react always provides a complete configuration object
     // so any merge isnt really needed
   }
@@ -19,22 +19,43 @@ export default class InterpolatedDetector {
   async load() {
     // load and set up detector
     await this.detector.load();
-    this.configure(this.configs);
+    this.__configureDetector(this.configs.detector);
+
+    this.__configureInterpolator(this.configs.interpolater);
   }
 
   configure(configuration) {
-    this.configs = mergeDeep(this.configs, configuration);
+    // only update configurations which have changed: (slightly smoother UI when configuring)
+
+    let detectorConfigChange =
+      JSON.stringify(this.configs.detector) !==
+      JSON.stringify(configuration.detector);
+
+    let interpolaterConfigChange =
+      JSON.stringify(this.configs.interpolater) !==
+      JSON.stringify(configuration.interpolater);
 
     //configure detector
-    this.detector.configure(this.configs.detector);
+    detectorConfigChange && this.__configureDetector(configuration.detector);
 
     // init new Interpolater (with new configuration)
-    // no point in having a configure method in interpolater (? maybe fps ?)
+    interpolaterConfigChange &&
+      this.__configureInterpolator(configuration.interpolater);
+
+    //update configs
+    this.configs = mergeDeep({}, this.configs, configuration);
+  }
+
+  __configureDetector(config) {
+    this.detector.configure(config);
+  }
+  __configureInterpolator(config) {
     this.interpolater = new Interpolater(
       (video) => this.detector.detect(video),
-      this.configs.interpolater.initialVal,
-      this.configs.interpolater.stepToward,
-      this.configs.interpolater.fps
+      config.initialVal,
+      config.stepToward,
+      config.sensitivity,
+      config.fps
     );
   }
 

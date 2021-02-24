@@ -12,13 +12,12 @@ export default function withNosePose(WrappedComponent) {
     let [detector, setDetector] = useState(null);
     let [configs, setConfigs] = useState(defaults);
 
-    let outputRef = useRef();
+    let outputRef = useRef(null);
 
     const loadDetector = useCallback(async () => {
       // setup interpolation
 
       // load vector detector
-      const configs = {}; //optional configs
       let detector = nosePose(configs);
       await detector.load();
 
@@ -54,10 +53,13 @@ export default function withNosePose(WrappedComponent) {
     // incomplete (nested) configuration is possible here thanks to deep merge.
     // e.g.
     // configure({ interpolater: { fps: 10 } });
-    
+
     const configure = (configurations) => {
-      let newConfigs = mergeDeep(configs, configurations);
+      let newConfigs = mergeDeep({}, configs, configurations);
       setConfigs(newConfigs);
+      if (detector) {
+        detector.configure(newConfigs);
+      }
     };
 
     useEffect(() => {

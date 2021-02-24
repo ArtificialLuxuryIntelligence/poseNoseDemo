@@ -65,6 +65,9 @@ const drawBoundingFace = (
   prediction,
   ctx
 ) => {
+  if (!prediction.landmarks) {
+    return;
+  }
   const landmarks = prediction.landmarks;
   // Draw Dots
   for (let i = 0; i < landmarks.length; i++) {

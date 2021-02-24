@@ -1,11 +1,10 @@
 import * as blazeface from '@tensorflow-models/blazeface';
 import * as tf from '@tensorflow/tfjs';
-import { configPresets } from './presets';
 
 export default class NoseVectorDetector {
   constructor(config) {
-    this.model = null; // Note: original model still accessible in instance
-    this.config = config || configPresets.normal;
+    this.model = null;
+    this.config = config; // optional - can be configured after init
   }
 
   async load() {
@@ -13,7 +12,7 @@ export default class NoseVectorDetector {
   }
 
   configure(config) {
-    this.config = Object.assign({ ...configPresets.normal }, config);
+    this.config = config;
   }
   async detect(video) {
     // Get predictions from model

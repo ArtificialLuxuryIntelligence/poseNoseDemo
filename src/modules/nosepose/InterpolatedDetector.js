@@ -1,30 +1,10 @@
 import Interpolater from './Interpolater';
+import { configs } from './presets';
 //
 
 // params
 // detector: a detector with load, detect and configure function
 // configs: e.g. :
-
-// configs: {
-//     detector: {
-//       central_bounding: { x: [-20, 20], y: [-30, 15] },
-//       outer_bounding: { x: [-50, 50], y: [-35, 35] },
-//     },
-//     interpolater: {
-//       fps: 1,
-//       initialVal: {
-//         vectors: {
-//           direction_word: '',
-//           vector: [], //absolute value in face bounding rect
-//           vector_normalized_square: [0, 0], //normalized square [0,1]x [0,1]y
-//           vector_normalized_circle: [0, 0], //normalized circle [0,1]r
-//         },
-//         predictions: {},
-//         config: {},
-//       },
-//       stepToward: stepTowardDetector,
-//     },
-//   },
 
 export default class InterpolatedDetector {
   constructor(configs, detector) {
@@ -34,11 +14,32 @@ export default class InterpolatedDetector {
   }
 
   async load() {
-    // load detector
+    // load and set up detector
     await this.detector.load();
+    this.configure(configs);
+  }
+
+  configure(configuration) {
+    let detectorConfigs = Object.assign(
+      {},
+      configs.detector,
+      configuration.detector
+    );
+    let interpolaterConfigs = Object.assign(
+      {},
+      configs.interpolater,
+      configuration.detector
+    );
+    this.configs = {
+      detector: detectorConfigs,
+      interpolater: interpolaterConfigs,
+    };
+
+    //configure detector
     this.detector.configure(this.configs.detector);
 
-    // set up interpolater
+    // init new Interpolater (with new configuration)
+    // no point in having a configure method in interpolater (? maybe fps ?)
     this.interpolater = new Interpolater(
       (video) => this.detector.detect(video),
       this.configs.interpolater.initialVal,
@@ -46,19 +47,7 @@ export default class InterpolatedDetector {
       this.configs.interpolater.fps
     );
   }
-  configure(configs) {
-    //config detector/ config interpolator separated? so it doesnt get restarted every time? lets see..
 
-    this.configs = configs; //TO DO object assign wiht defaults
-    this.detector.configure(this.configs.detector);
-
-    this.interpolater = new Interpolater(
-      this.detector.detect(this.configs.detector),
-      this.configs.interpolater.initialVal,
-      this.configs.interpolater.stepToward,
-      this.configs.interpolater.fps
-    );
-  }
   detect(video) {
     return this.interpolater.interpolate(video);
   }

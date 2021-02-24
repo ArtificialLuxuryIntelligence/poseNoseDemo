@@ -39,7 +39,7 @@ export default class Interpolater {
         this.resolved = true;
         this.slow = v;
       } else {
-        v = await this.slowPromise();
+        v = await this.slowPromise(val);
         this.resolved = true;
         this.slow = v;
       }

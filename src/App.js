@@ -8,10 +8,9 @@ import withNosePoseNew from './modules/react-with-nosepose/withNosePoseNew.js';
 function App({ nosePose }) {
   return (
     <div>
-      <Game nosePose={nosePose} />
       {/* <WelcomeDemo nosePose={nosePose} /> */}
-
-      {/* <ConfigPage nosePose={nosePose} /> */}
+      {/* <Game nosePose={nosePose} /> */}
+      <ConfigPage nosePose={nosePose} />
     </div>
   );
 }

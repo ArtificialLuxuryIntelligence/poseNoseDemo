@@ -105,7 +105,7 @@ export default function Controls({ props }) {
         </div>
       </div>
       <div className="slider-control">
-        <label>sensitivity  </label>
+        <label>sensitivity </label>
 
         <Slider
           onChange={({ x }) => setSensitivity(parseFloat(x.toFixed(2)))}
@@ -154,7 +154,7 @@ export default function Controls({ props }) {
           onChange={({ x }) => setfps(parseFloat(x.toFixed(2)))}
           x={_fps}
           xstep={1}
-          xmin={1}
+          xmin={0}
           xmax={60}
           id="fps"
         />

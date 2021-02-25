@@ -9,24 +9,13 @@ const defaults = {
   },
   interpolater: {
     fps: 15,
-    sensitivity: 0.04,
-    // initialVal: {
-    //   vectors: {
-    //     direction_word: '',
-    //     vector: [], //absolute value in face bounding rect
-    //     vector_normalized_square: [0, 0], //normalized square [0,1]x [0,1]y
-    //     vector_normalized_circle: [0, 0], //normalized circle [0,1]r
-    //   },
-    //   predictions: {},
-    //   config: {},
-    // },
+    sensitivity: 0.1,
     stepToward: stepTowardDetector,
   },
 };
 
 // only change circle/square vectors
 function stepTowardDetector(prevPredictions, currentPredictions, sensitivity) {
-  console.log(prevPredictions, currentPredictions);
   const { vectors } = currentPredictions;
   const { vector_normalized_circle, vector_normalized_square } = vectors;
 

@@ -20,8 +20,9 @@ export default class InterpolatedDetector {
   async load() {
     // load and set up detector
     await this.detector.load();
-    this.__configureDetector(this.configs.detector);
 
+    this.__configureDetector(this.configs.detector);
+    //config inits new interpolator
     this.__configureInterpolator(this.configs.interpolater);
   }
 
@@ -53,7 +54,6 @@ export default class InterpolatedDetector {
   __configureInterpolator(config) {
     this.interpolater = new Interpolater(
       (video) => this.detector.detect(video),
-      config.initialVal,
       config.stepToward,
       config.sensitivity,
       config.fps

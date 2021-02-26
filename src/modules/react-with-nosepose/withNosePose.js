@@ -18,6 +18,8 @@ export default function withNosePose(WrappedComponent) {
 
       // load vector detector
       let detector = nosePose(configs, 'mesh');
+      // let detector = nosePose(configs, 'mesh');
+
       // let detector = nosePose(configs);
 
       await detector.load();

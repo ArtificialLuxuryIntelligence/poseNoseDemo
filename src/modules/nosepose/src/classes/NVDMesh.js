@@ -1,10 +1,10 @@
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
 import * as tf from '@tensorflow/tfjs';
 
-import './NoseVectorDetector';
-import NoseVectorDetector from './NoseVectorDetector';
+import './VectorDetector';
+import VectorDetector from './VectorDetector';
 
-export default class NVDMesh extends NoseVectorDetector {
+export default class NVDMesh extends VectorDetector {
   constructor(config, model) {
     super(model, config);
     // super(config);

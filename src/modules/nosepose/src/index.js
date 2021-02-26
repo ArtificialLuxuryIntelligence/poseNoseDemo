@@ -1,5 +1,5 @@
 import InterpolatedDetector from './classes/InterpolatedDetector';
-import NoseVectorDetector from './classes/NoseVectorDetector';
+import VectorDetector from './classes/VectorDetector';
 import NVDBlaze from './classes/NVDBlaze';
 import NVDMesh from './classes/NVDMesh';
 import IVDMesh from './classes/IVDMesh';

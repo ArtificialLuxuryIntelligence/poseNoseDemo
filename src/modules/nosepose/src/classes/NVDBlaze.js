@@ -1,10 +1,10 @@
 import * as blazeface from '@tensorflow-models/blazeface';
 import * as tf from '@tensorflow/tfjs';
 
-import './NoseVectorDetector';
-import NoseVectorDetector from './NoseVectorDetector';
+import './VectorDetector';
+import VectorDetector from './VectorDetector';
 
-export default class NVDBlaze extends NoseVectorDetector {
+export default class NVDBlaze extends VectorDetector {
   constructor(config, model) {
     super(model, config);
     // super(config);

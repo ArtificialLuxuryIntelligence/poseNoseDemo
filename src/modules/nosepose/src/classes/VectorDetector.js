@@ -1,7 +1,7 @@
 import * as blazeface from '@tensorflow-models/blazeface';
 import * as tf from '@tensorflow/tfjs';
 
-export default class NoseVectorDetector {
+export default class VectorDetector {
   constructor(config) {
     this.model = null;
     this.config = config; // optional - can be configured after init
@@ -39,6 +39,10 @@ export default class NoseVectorDetector {
       vector_normalized_square, //normalized square [0,1]x [0,1]y
       vector_normalized_circle, //normalized circle [0,1]r
     };
+  }
+
+  __getMouthOpenVector(lipUpper, lipLower){
+    
   }
 
   __normalizeInRange(value, range1, range2 = [0, 1]) {

@@ -81,7 +81,7 @@ export default function withNosePose(WrappedComponent) {
         console.log('starting animation');
 
         const loop = () => {
-          detect();
+          detector && detect();
           animationFrameRef.current = requestAnimationFrame(loop);
         };
 

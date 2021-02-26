@@ -6,6 +6,7 @@ import {
   drawSquareControl,
   drawBoundingFace,
   drawBoundingFace2,
+  drawBoundingEye,
 } from '../js/canvasDrawing.js';
 
 export default function OverlayCanvas({ nosePose }) {
@@ -46,15 +47,41 @@ export default function OverlayCanvas({ nosePose }) {
           const { topLeft, bottomRight } = predictions.boundingBox;
           const width = bottomRight[0] - topLeft[0];
           const height = bottomRight[1] - topLeft[1];
+          const center = [topLeft[0] + width / 2, topLeft[1] + height / 2];
+
           const points = predictions.scaledMesh;
           // drawBoundingFace(central_bounding, outer_bounding, predictions, ctx);
+
+          // let annots = predictions.annotations;
+          // let {
+          //   leftEyeIris,
+          //   leftEyeLower0,
+          //   leftEyeLower1,
+          //   leftEyeLower2,
+          //   leftEyeLower3,
+          //   leftEyeUpper0,
+          //   leftEyeUpper1,
+          //   leftEyeUpper2,
+          //   leftEyeUpper3,
+          // } = annots;
+          // const points2 = [...leftEyeIris];
+
+  
           drawBoundingFace2(
             central_bounding,
             outer_bounding,
-            { topLeft, width, height },
+            { center },
             points,
             ctx
           );
+
+          // drawBoundingEye(
+          //   central_bounding,
+          //   outer_bounding,
+          //   { center },
+          //   points2,
+          //   ctx
+          // );
 
           drawCircleControl(vector_normalized_circle, ctx, {
             inputRadius: 1,

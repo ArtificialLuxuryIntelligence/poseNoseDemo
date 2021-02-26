@@ -59,6 +59,7 @@ const drawSquareControl = function (
   ctx.fill();
 };
 
+//old
 const drawBoundingFace = (
   central_bounding,
   outer_bounding,
@@ -149,8 +150,8 @@ const drawBoundingFace = (
       ctx.arc(x, y, 15 /* radius */, 0, 3 * Math.PI);
       ctx.fillStyle = 'black';
     } else {
-      // ctx.arc(x, y, 10 /* radius */, 0, 3 * Math.PI);
-      // ctx.fillStyle = 'orangered';
+      ctx.arc(x, y, 10 /* radius */, 0, 3 * Math.PI);
+      ctx.fillStyle = 'orangered';
     }
     // ctx.arc(x, y, 2 /* radius */, 0, 3 * Math.PI);
     ctx.fill();
@@ -160,12 +161,71 @@ const drawBoundingFace = (
 const drawBoundingFace2 = (
   central_bounding,
   outer_bounding,
-  { topLeft, width, height, nose },
+  { center, nose },
   points,
   ctx
 ) => {
   // draw outer bounding box
-  const center = [topLeft[0] + width / 2, topLeft[1] + height / 2];
+  const {
+    topLeft: topLeft_o,
+    width: width_o,
+    height: height_o,
+  } = getBoundingDimensions(outer_bounding);
+
+  ctx.strokeStyle = 'purple';
+  ctx.beginPath();
+  ctx.rect(
+    center[0] + topLeft_o[0],
+    center[1] + topLeft_o[1],
+    width_o,
+    height_o
+  );
+  ctx.stroke();
+
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+  // ctx.fillStyle = 'pink';
+  ctx.fillRect(
+    center[0] + topLeft_o[0],
+    center[1] + topLeft_o[1],
+    width_o,
+    height_o
+  );
+
+  // Draw central point of bounding box
+  // ctx.beginPath();
+  // ctx.arc(center[0], center[1], 3 /* radius */, 0, 3 * Math.PI);
+  // ctx.fillStyle = 'red';
+  // ctx.fill();
+//
+
+
+  // Draw Dots
+  for (let i = 0; i < points.length; i++) {
+    const x = points[i][0];
+    const y = points[i][1];
+    ctx.beginPath();
+    if (i === 4) {
+      // draw nose
+      ctx.arc(x, y, 3 /* radius */, 0, 3 * Math.PI);
+      ctx.fillStyle = 'black';
+    } else if (true) {
+      // ctx.arc(x, y, 3 /* radius */, 0, 3 * Math.PI);
+      // ctx.fillStyle = 'orangered';
+    }
+
+    // ctx.arc(x, y, 2 /* radius */, 0, 3 * Math.PI);
+    ctx.fill();
+  }
+};
+
+const drawBoundingEye = (
+  central_bounding,
+  outer_bounding,
+  { center, nose },
+  points,
+  ctx
+) => {
+  // draw outer bounding box
   const {
     topLeft: topLeft_o,
     width: width_o,
@@ -200,10 +260,11 @@ const drawBoundingFace2 = (
       // draw nose
       ctx.arc(x, y, 3 /* radius */, 0, 3 * Math.PI);
       ctx.fillStyle = 'black';
-    } else {
+    } else if (true) {
       // ctx.arc(x, y, 3 /* radius */, 0, 3 * Math.PI);
       // ctx.fillStyle = 'orangered';
     }
+
     // ctx.arc(x, y, 2 /* radius */, 0, 3 * Math.PI);
     ctx.fill();
   }
@@ -344,6 +405,7 @@ export {
   drawSquareControl,
   drawBoundingFace,
   drawBoundingFace2,
+  drawBoundingEye,
   drawJoystick,
   updatePosition,
 };

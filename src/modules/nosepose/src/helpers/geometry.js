@@ -12,4 +12,25 @@ function stepToward(prevPos, actualPos, stepSize = 0.1) {
   return [x, y];
 }
 
-export { stepToward };
+function averageCoordinate(array) {
+  let l = array.length;
+  let c = array
+    .reduce(
+      (acc, curr) => {
+        let [x, y, z] = acc;
+        let [xc, yc, zc] = curr;
+        return [x + xc, y + yc, z + zc];
+      },
+      [0, 0, 0]
+    )
+    .map((v) => v / l);
+  return c;
+}
+
+function distanceCoordinates(c1, c2) {
+  return Math.sqrt(
+    (c2[0] - c1[0]) ** 2 + (c2[1] - c1[1]) ** 2 + (c2[2] - c1[2]) ** 2
+  );
+}
+
+export { stepToward, averageCoordinate, distanceCoordinates };

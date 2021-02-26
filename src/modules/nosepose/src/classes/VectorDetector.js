@@ -41,9 +41,7 @@ export default class VectorDetector {
     };
   }
 
-  __getMouthOpenVector(lipUpper, lipLower){
-    
-  }
+  
 
   __normalizeInRange(value, range1, range2 = [0, 1]) {
     if (value > range1[1]) {

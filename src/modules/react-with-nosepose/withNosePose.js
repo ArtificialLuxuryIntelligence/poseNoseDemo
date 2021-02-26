@@ -44,11 +44,16 @@ export default function withNosePose(WrappedComponent) {
         webcamRef.current.video.height = videoHeight;
 
         // Make Detections
-        const prediction = detector.detect(video);
+        const detection = detector.detect(video);
         // console.log(prediction);
 
         // Set prediction to Ref
-        outputRef.current = prediction;
+        outputRef.current = detection;
+        // if (detection && detection.vectors.normalized_mouth === 1) {
+        //   console.log('open');
+        // } else {
+        //   console.log('closed');
+        // }
       }
     };
 

@@ -5,7 +5,7 @@ import { stepToward } from './helpers/geometry';
 const defaults = {
   detector: {
     central_bounding: { x: [-20, 20], y: [-30, 15] },
-    outer_bounding: { x: [-50, 50], y: [-35, 35] },
+    outer_bounding: { x: [-50, 50], y: [-35, 15] },
   },
   interpolater: {
     fps: 15,

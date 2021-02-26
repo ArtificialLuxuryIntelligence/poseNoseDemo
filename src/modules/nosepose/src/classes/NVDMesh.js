@@ -14,13 +14,16 @@ export default class NVDMesh extends NoseVectorDetector {
   async load() {
     this.model = await faceLandmarksDetection.load(
       faceLandmarksDetection.SupportedPackages.mediapipeFacemesh,
-      { maxFaces: 1, shouldLoadIrisModel: true }
+      { maxFaces: 1, shouldLoadIrisModel: false }
     );
   }
 
   async detect(video) {
     // Get predictions from model
-    let predictions = await this.model.estimateFaces({ input: video });
+    let predictions = await this.model.estimateFaces({
+      input: video,
+      predictIrises: false,
+    });
     if (!predictions.length) {
       return false;
     }

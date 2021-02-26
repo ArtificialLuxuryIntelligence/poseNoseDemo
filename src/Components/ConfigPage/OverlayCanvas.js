@@ -42,14 +42,17 @@ export default function OverlayCanvas({ nosePose }) {
 
           ctx.drawImage(video, 0, 0);
 
-          const topLeft = [0, 0];
-          const width = 60;
-          const height = 20;
-          drawBoundingFace(central_bounding, outer_bounding, predictions, ctx);
+          // Mesh specific code
+          const { topLeft, bottomRight } = predictions.boundingBox;
+          const width = bottomRight[0] - topLeft[0];
+          const height = bottomRight[1] - topLeft[1];
+          const points = predictions.scaledMesh;
+          // drawBoundingFace(central_bounding, outer_bounding, predictions, ctx);
           drawBoundingFace2(
             central_bounding,
             outer_bounding,
             { topLeft, width, height },
+            points,
             ctx
           );
 

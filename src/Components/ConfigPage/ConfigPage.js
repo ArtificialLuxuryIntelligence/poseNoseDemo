@@ -4,7 +4,7 @@ import OverlayCanvas from './OverlayCanvas';
 import CursorCanvas from './../CursorCanvas';
 
 export default function ConfigPage({ nosePose }) {
-  const [speed, setSpeed] = useState(5);
+  const [speed, setSpeed] = useState(10);
   const [stoppingRatio, setStoppingRatio] = useState(0.3);
 
   const { outputRef, webcamRef, configs, configure } = nosePose;

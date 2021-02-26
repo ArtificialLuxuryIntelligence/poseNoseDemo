@@ -1,5 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { drawJoystick, updatePosition } from './js/canvasDrawing';
+import {
+  drawJoystick,
+  updatePosition,
+  drawSquareControl,
+} from './js/canvasDrawing';
 
 // const stoppingRatio = 0.2; // area within which to no movement
 
@@ -36,10 +40,11 @@ export default function CursorCanvas({ outputRef, speed, stoppingRatio }) {
 
         //Render to canvas
 
-        let vector = outputRef.current?.vectors?.vector_normalized_circle;
-        if (vector) {
+        let vectors = outputRef.current?.vectors;
+        let vector_circle = vectors?.vector_normalized_circle;
+        if (vectors) {
           position = updatePosition(
-            vector,
+            vector_circle,
             position,
             stoppingRatio,
             canvasDimensions,
@@ -53,7 +58,7 @@ export default function CursorCanvas({ outputRef, speed, stoppingRatio }) {
           //   console.log('bottom');
           // }
 
-          updateCanvas(position, vector, stoppingRatio, ctx);
+          updateCanvas(position, vectors, stoppingRatio, ctx);
         }
 
         animationFrameRef.current = requestAnimationFrame(loop);
@@ -93,7 +98,8 @@ export default function CursorCanvas({ outputRef, speed, stoppingRatio }) {
   );
 }
 
-const updateCanvas = (position, vector, stoppingRatio, ctx) => {
+const updateCanvas = (position, vectors, stoppingRatio, ctx) => {
+  const { vector_normalized_circle, vector_normalized_square } = vectors;
   const [x, y] = position;
 
   // Render generic circle cursor
@@ -105,11 +111,17 @@ const updateCanvas = (position, vector, stoppingRatio, ctx) => {
   // ctx.fill();
 
   // Render fancy joystick 'cursor'
-  drawJoystick(vector, ctx, {
+  drawJoystick(vector_normalized_circle, ctx, {
     inputRadius: 1,
     outputRadius: 50,
     center: position,
     stoppingRatio,
+  });
+
+  drawSquareControl(vector_normalized_square, ctx, {
+    inputDimensions: [1, 1],
+    outputDimensions: [ctx.canvas.width, ctx.canvas.height],
+    topLeft: [0, 0], // note: canvas is mirrored
   });
 };
 

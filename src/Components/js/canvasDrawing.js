@@ -12,7 +12,7 @@ const drawCircleControl = function (
 
   ctx.beginPath();
   ctx.arc(c_x, c_y, r, 0, 2 * Math.PI);
-  ctx.fillStyle = 'rgba(200,0,0,0.8)';
+  ctx.fillStyle = 'rgba(200,0,0,0.2)';
 
   ctx.fill();
 
@@ -48,7 +48,7 @@ const drawSquareControl = function (
   //   ctx.strokeStyle = 'pink';
   ctx.beginPath();
   ctx.rect(topLeft[0], topLeft[1], outputDimensions[0], outputDimensions[1]);
-  ctx.fillStyle = 'rgba(200,0,0,0.8)';
+  ctx.fillStyle = 'rgba(200,0,0,0.2)';
   ctx.fill();
   //   ctx.stroke();
 
@@ -137,14 +137,79 @@ const drawBoundingFace = (
     width_o,
     height_o
   );
+
+  // Draw dots
+
+  for (let i = 0; i < landmarks.length; i++) {
+    const x = landmarks[i][0];
+    const y = landmarks[i][1];
+    ctx.beginPath();
+    if (i === 2) {
+      // draw nose
+      ctx.arc(x, y, 15 /* radius */, 0, 3 * Math.PI);
+      ctx.fillStyle = 'black';
+    } else {
+      // ctx.arc(x, y, 10 /* radius */, 0, 3 * Math.PI);
+      // ctx.fillStyle = 'orangered';
+    }
+    // ctx.arc(x, y, 2 /* radius */, 0, 3 * Math.PI);
+    ctx.fill();
+  }
 };
 
 const drawBoundingFace2 = (
   central_bounding,
   outer_bounding,
-  { topLeft, width, height },
+  { topLeft, width, height, nose },
+  points,
   ctx
-) => {};
+) => {
+  // draw outer bounding box
+  const center = [topLeft[0] + width / 2, topLeft[1] + height / 2];
+  const {
+    topLeft: topLeft_o,
+    width: width_o,
+    height: height_o,
+  } = getBoundingDimensions(outer_bounding);
+
+  ctx.strokeStyle = 'purple';
+  ctx.beginPath();
+  ctx.rect(
+    center[0] + topLeft_o[0],
+    center[1] + topLeft_o[1],
+    width_o,
+    height_o
+  );
+  ctx.stroke();
+
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+  // ctx.fillStyle = 'pink';
+  ctx.fillRect(
+    center[0] + topLeft_o[0],
+    center[1] + topLeft_o[1],
+    width_o,
+    height_o
+  );
+
+  // Draw Dots
+  for (let i = 0; i < points.length; i++) {
+    const x = points[i][0];
+    const y = points[i][1];
+    ctx.beginPath();
+    if (i === 4) {
+      // draw nose
+      ctx.arc(x, y, 3 /* radius */, 0, 3 * Math.PI);
+      ctx.fillStyle = 'black';
+    } else {
+      // ctx.arc(x, y, 3 /* radius */, 0, 3 * Math.PI);
+      // ctx.fillStyle = 'orangered';
+    }
+    // ctx.arc(x, y, 2 /* radius */, 0, 3 * Math.PI);
+    ctx.fill();
+  }
+};
+
+///////////////////////
 
 function clearCanvas(ctx) {
   let w = ctx.canvas.width;
@@ -208,11 +273,19 @@ const updatePosition = (
   const [width, height] = canvasDimensions;
   const [x, y] = vector;
   const [x_p, y_p] = prevPos;
-  let x_new = -x * speed + x_p;
-  let y_new = -y * speed + y_p;
+
+  let r = Math.sqrt(x ** 2 + y ** 2);
+
+  //stopping ratio
+  let r_n = r - stoppingRatio;
+
+  // makes spped 0 at edge of stopping ratio region and goes up to max as normal
+  let r_s = normalizeInRange(r_n, [0, 1 - stoppingRatio], [0, 1]);
+
+  let x_new = -x * r_s * speed + x_p;
+  let y_new = -y * r_s * speed + y_p;
 
   // Stop if within 'stopping ratio' *r
-  let r = Math.sqrt(vector[0] ** 2 + vector[1] ** 2);
   if (r < stoppingRatio) {
     return prevPos;
   }
@@ -248,6 +321,21 @@ function getBoundingDimensions(bounding) {
   let width = Math.abs(bounding_x[0]) + Math.abs(bounding_x[1]);
 
   return { topLeft, width, height };
+}
+
+function normalizeInRange(value, range1, range2 = [0, 1]) {
+  if (value > range1[1]) {
+    return range2[1];
+  }
+  if (value < range1[0]) {
+    return range2[0];
+  }
+  let dist1 = range1[1] - range1[0];
+  let dist2 = range2[1] - range2[0];
+
+  const ratio = (value - range1[0]) / dist1; //range [0,1]
+  let norm = range2[0] + ratio * dist2;
+  return norm;
 }
 
 export {

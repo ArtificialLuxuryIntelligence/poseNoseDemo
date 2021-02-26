@@ -48,7 +48,8 @@ export default class NVDMesh extends NoseVectorDetector {
 
     // const nose = prediction.landmarks[2];
 
-    const nose = prediction.annotations.noseTip[0];
+    // const nose = prediction.annotations.noseTip[0];
+    const nose = prediction.scaledMesh[4];
     return { topLeft, bottomRight, width, height, center, nose };
   }
 }

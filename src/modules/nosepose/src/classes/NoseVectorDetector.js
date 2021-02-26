@@ -7,28 +7,10 @@ export default class NoseVectorDetector {
     this.config = config; // optional - can be configured after init
   }
 
-  async load() {
-    this.model = await blazeface.load({ maxFaces: 1 });
-  }
+  // load, detect and __getPredictionData are in extensions of this class
 
   configure(config) {
     this.config = config;
-  }
-  async detect(video) {
-    // Get predictions from model
-    let predictions = await this.model.estimateFaces(video);
-    if (!predictions.length) {
-      return false;
-    }
-
-    // Extract relevant data
-    const { nose, center } = this.__getPredictionData(predictions[0]);
-
-    let vectors = this.__getNosePointVectors(nose, center);
-    let config = this.config;
-
-    // note estimateFaces complete *predictions* are also included here (DO NOT call it again!)
-    return { vectors, predictions: predictions[0], config };
   }
 
   __getNosePointVectors(nose, center) {
@@ -59,21 +41,6 @@ export default class NoseVectorDetector {
     };
   }
 
-  // note: current only nose and center are used from this function
-  __getPredictionData(prediction) {
-    const topLeft = prediction.topLeft;
-    const bottomRight = prediction.bottomRight;
-    const width = bottomRight[0] - topLeft[0];
-    const height = bottomRight[1] - topLeft[1];
-    const center = [topLeft[0] + width / 2, topLeft[1] + height / 2];
-
-    const nose = prediction.landmarks[2];
-
-    return { topLeft, bottomRight, width, height, center, nose };
-  }
-
-  // Where a value lies in a given range. Normalized to a range(range2).
-  // note: careful with negative ranges
   __normalizeInRange(value, range1, range2 = [0, 1]) {
     if (value > range1[1]) {
       return range2[1];

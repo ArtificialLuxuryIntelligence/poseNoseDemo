@@ -5,6 +5,7 @@ import {
   drawCircleControl,
   drawSquareControl,
   drawBoundingFace,
+  drawBoundingFace2,
 } from '../js/canvasDrawing.js';
 
 export default function OverlayCanvas({ nosePose }) {
@@ -41,7 +42,16 @@ export default function OverlayCanvas({ nosePose }) {
 
           ctx.drawImage(video, 0, 0);
 
+          const topLeft = [0, 0];
+          const width = 60;
+          const height = 20;
           drawBoundingFace(central_bounding, outer_bounding, predictions, ctx);
+          drawBoundingFace2(
+            central_bounding,
+            outer_bounding,
+            { topLeft, width, height },
+            ctx
+          );
 
           drawCircleControl(vector_normalized_circle, ctx, {
             inputRadius: 1,

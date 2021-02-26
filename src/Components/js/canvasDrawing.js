@@ -139,6 +139,13 @@ const drawBoundingFace = (
   );
 };
 
+const drawBoundingFace2 = (
+  central_bounding,
+  outer_bounding,
+  { topLeft, width, height },
+  ctx
+) => {};
+
 function clearCanvas(ctx) {
   let w = ctx.canvas.width;
   let h = ctx.canvas.height;
@@ -248,6 +255,7 @@ export {
   drawCircleControl,
   drawSquareControl,
   drawBoundingFace,
+  drawBoundingFace2,
   drawJoystick,
   updatePosition,
 };

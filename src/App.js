@@ -9,8 +9,8 @@ function App({ nosePose }) {
   return (
     <div>
       {/* <WelcomeDemo nosePose={nosePose} /> */}
-      <Game nosePose={nosePose} />
-      {/* <ConfigPage nosePose={nosePose} /> */}
+      {/* <Game nosePose={nosePose} /> */}
+      <ConfigPage nosePose={nosePose} />
     </div>
   );
 }

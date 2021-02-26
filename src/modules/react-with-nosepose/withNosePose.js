@@ -17,7 +17,9 @@ export default function withNosePose(WrappedComponent) {
       // setup interpolation
 
       // load vector detector
-      let detector = nosePose(configs);
+      let detector = nosePose(configs, 'mesh');
+      // let detector = nosePose(configs);
+
       await detector.load();
 
       setDetector(detector);
@@ -76,7 +78,7 @@ export default function withNosePose(WrappedComponent) {
     useEffect(() => {
       // console.log('rerendering animation');
       const animationLoop = () => {
-        // console.log('starting animation');
+        console.log('starting animation');
 
         const loop = () => {
           detect();

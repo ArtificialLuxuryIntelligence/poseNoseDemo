@@ -29,9 +29,15 @@ const drawSquareControl = function (
     inputDimensions: [1, 1],
     outputDimensions: [100, 100],
     topLeft: [20, 200],
+    pointer_radius: 10,
   }
 ) {
-  const { inputDimensions, outputDimensions, topLeft } = options;
+  const {
+    inputDimensions,
+    outputDimensions,
+    topLeft,
+    pointer_radius,
+  } = options;
   const [x, y] = coords;
   const [c_x, c_y] = [
     topLeft[0] + outputDimensions[0] / 2,
@@ -40,21 +46,17 @@ const drawSquareControl = function (
   const scaleFactorX = outputDimensions[0] / 2 / inputDimensions[0];
   const scaleFactorY = outputDimensions[1] / 2 / inputDimensions[1];
 
-  //   const [c_x, c_y] = options.topLeft;
-  //   const { outputRadius: r } = options;
   let x_j = c_x - x * scaleFactorX;
   let y_j = c_y - y * scaleFactorY;
 
-  //   ctx.strokeStyle = 'pink';
   ctx.beginPath();
   ctx.rect(topLeft[0], topLeft[1], outputDimensions[0], outputDimensions[1]);
   ctx.fillStyle = 'rgba(200,0,0,0.2)';
   ctx.fill();
-  //   ctx.stroke();
 
   ctx.beginPath();
 
-  ctx.arc(x_j, y_j, 10, 0, 2 * Math.PI);
+  ctx.arc(x_j, y_j, pointer_radius, 0, 2 * Math.PI);
   ctx.fillStyle = 'blue';
   ctx.fill();
 };
@@ -196,8 +198,7 @@ const drawBoundingFace2 = (
   // ctx.arc(center[0], center[1], 3 /* radius */, 0, 3 * Math.PI);
   // ctx.fillStyle = 'red';
   // ctx.fill();
-//
-
+  //
 
   // Draw Dots
   for (let i = 0; i < points.length; i++) {

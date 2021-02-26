@@ -49,11 +49,7 @@ export default function withNosePose(WrappedComponent) {
 
         // Set prediction to Ref
         outputRef.current = detection;
-        // if (detection && detection.vectors.normalized_mouth === 1) {
-        //   console.log('open');
-        // } else {
-        //   console.log('closed');
-        // }
+  
       }
     };
 

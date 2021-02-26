@@ -29,6 +29,8 @@ export default function CursorCanvas({ outputRef, speed, stoppingRatio }) {
 
       // Set initial cursor position
       position = [canvasWidth / 2, canvasHeight / 2];
+      // set initial pointer radius
+      let pointer_radius = 5;
 
       // Add click at position
       document.body.addEventListener('keyup', spaceListener);
@@ -36,12 +38,14 @@ export default function CursorCanvas({ outputRef, speed, stoppingRatio }) {
       const loop = () => {
         // Set canvas width
         canvasRef.current.width = window.innerWidth;
-        canvasRef.current.height = window.innerHeight;
-
-        //Render to canvas
+        canvasRef.current.height = window.innerHeight; //Render to canvas
 
         let vectors = outputRef.current?.vectors;
         let vector_circle = vectors?.vector_normalized_circle;
+
+        // Mouth open
+        let mouth = outputRef.current.vectors.normalized_mouth === 1;
+
         if (vectors) {
           position = updatePosition(
             vector_circle,
@@ -58,7 +62,13 @@ export default function CursorCanvas({ outputRef, speed, stoppingRatio }) {
           //   console.log('bottom');
           // }
 
-          updateCanvas(position, vectors, stoppingRatio, ctx);
+          if (mouth && pointer_radius <= 52) {
+            pointer_radius += 3;
+          } else if (!mouth && pointer_radius > 5) {
+            pointer_radius -= 3;
+          }
+
+          updateCanvas(position, vectors, stoppingRatio, pointer_radius, ctx);
         }
 
         animationFrameRef.current = requestAnimationFrame(loop);
@@ -98,8 +108,18 @@ export default function CursorCanvas({ outputRef, speed, stoppingRatio }) {
   );
 }
 
-const updateCanvas = (position, vectors, stoppingRatio, ctx) => {
-  const { vector_normalized_circle, vector_normalized_square } = vectors;
+const updateCanvas = (
+  position,
+  vectors,
+  stoppingRatio,
+  pointer_radius,
+  ctx
+) => {
+  const {
+    vector_normalized_circle,
+    vector_normalized_square,
+    normalized_mouth,
+  } = vectors;
   const [x, y] = position;
 
   // Render generic circle cursor
@@ -111,6 +131,7 @@ const updateCanvas = (position, vectors, stoppingRatio, ctx) => {
   // ctx.fill();
 
   // Render fancy joystick 'cursor'
+
   drawJoystick(vector_normalized_circle, ctx, {
     inputRadius: 1,
     outputRadius: 50,
@@ -122,6 +143,7 @@ const updateCanvas = (position, vectors, stoppingRatio, ctx) => {
     inputDimensions: [1, 1],
     outputDimensions: [ctx.canvas.width, ctx.canvas.height],
     topLeft: [0, 0], // note: canvas is mirrored
+    pointer_radius: pointer_radius,
   });
 };
 

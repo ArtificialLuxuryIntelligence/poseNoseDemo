@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import CursorCanvas from '../CursorCanvas';
+import PrecisionCursor from '../PrecisionCursor';
 import './WelcomeDemo.css';
 
 const SPEED = 6;
@@ -11,12 +12,20 @@ export default function WelcomeDemo({ nosePose }) {
   const [shift, setShift] = useState(true);
   return (
     <div>
-      <CursorCanvas
+      {/* <CursorCanvas
+        webcamRef={webcamRef}
+        outputRef={outputRef}
+        speed={SPEED}
+        stoppingRatio={STOPPINGR}
+      /> */}
+
+      <PrecisionCursor
         webcamRef={webcamRef}
         outputRef={outputRef}
         speed={SPEED}
         stoppingRatio={STOPPINGR}
       />
+
       <h1>Welcome</h1>
       <p>lorem </p>
       <button onClick={() => alert('oh')}>ohhhhhhhh</button>

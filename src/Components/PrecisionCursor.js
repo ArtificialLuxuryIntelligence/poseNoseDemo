@@ -1,13 +1,14 @@
 import React, { useRef, useEffect, useState } from 'react';
 import {
   drawJoystick,
+  drawPrecisionCursor,
   updatePosition,
   drawSquareControl,
 } from './js/canvasDrawing';
 
 // const stoppingRatio = 0.2; // area within which to no movement
 
-export default function CursorCanvas({ outputRef, speed, stoppingRatio }) {
+export default function PrecisionCursor({ outputRef, speed, stoppingRatio }) {
   const canvasRef = useRef(null);
   const animationFrameRef = useRef(null);
 
@@ -28,7 +29,8 @@ export default function CursorCanvas({ outputRef, speed, stoppingRatio }) {
       let canvasDimensions = [canvasWidth, canvasHeight];
 
       // Set initial cursor position
-      position = [canvasWidth / 2, canvasHeight / 2];
+      let mouthWasOpen = false;
+      let fixed_pos = [canvasWidth / 2, canvasHeight / 2];
       // set initial pointer radius
       let pointer_radius = 5;
 
@@ -38,37 +40,73 @@ export default function CursorCanvas({ outputRef, speed, stoppingRatio }) {
       const loop = () => {
         // Set canvas width
         canvasRef.current.width = window.innerWidth;
-        canvasRef.current.height = window.innerHeight; //Render to canvas
+        canvasRef.current.height = window.innerHeight;
+        //Render to canvas
 
         let vectors = outputRef.current?.vectors;
-        let vector_circle = vectors?.vector_normalized_circle;
 
         // Mouth open
         let mouth = outputRef?.current?.vectors.normalized_mouth === 1;
 
         if (vectors) {
-          position = updatePosition(
-            vector_circle,
-            position,
-            stoppingRatio,
-            canvasDimensions,
-            speed
-          );
+          const {
+            vector_normalized_circle,
+            vector_normalized_square,
+          } = vectors;
 
-          // if (position[1] < 50) {
-          //   console.log('top');
-          // }
-          // if (position[1] > canvasRef.current.height - 50) {
-          //   console.log('bottom');
-          // }
+          const [x, y] = vector_normalized_square;
+          let w = canvasRef.current.width;
+          let h = canvasRef.current.height;
+          const [c_x, c_y] = [w / 2, h / 2];
+          let x_j = c_x - (x * w) / 2;
+          let y_j = c_y - (y * h) / 2;
 
-          if (mouth && pointer_radius <= 52) {
+          // fix the position
+          if (mouth && !mouthWasOpen) {
+            mouthWasOpen = true;
+            fixed_pos = [x_j, y_j];
+          } else if (!mouth) {
+            mouthWasOpen = false;
+            fixed_pos = [x_j, y_j];
+          }
+          //pointer radius
+          if (mouth && pointer_radius <= 50) {
             pointer_radius += 3;
           } else if (!mouth && pointer_radius > 5) {
             pointer_radius -= 3;
           }
 
-          updateCanvas(position, vectors, stoppingRatio, pointer_radius, ctx);
+          if (mouth) {
+            drawPrecisionCursor(
+              fixed_pos,
+              vector_normalized_circle,
+              true,
+              { outputRadius: pointer_radius },
+              ctx
+            );
+          } else {
+            drawPrecisionCursor(
+              [x_j, y_j],
+              vector_normalized_circle,
+              false,
+              { outputRadius: pointer_radius },
+              ctx
+            );
+          }
+
+          // ctx.arc(x_j, y_j, pointer_radius, 0, 2 * Math.PI);
+          // ctx.fillStyle = 'red';
+          // ctx.fill();
+
+          // position = []
+
+          // drawSquareControl(vector_normalized_square, ctx, {
+          //   inputDimensions: [1, 1],
+          //   outputDimensions: [ctx.canvas.width, ctx.canvas.height],
+          //   topLeft: [0, 0], // note: canvas is mirrored
+          //   pointer_radius: pointer_radius,
+          // });
+          // updateCanvas(position, vectors, stoppingRatio, pointer_radius, ctx);
         }
 
         animationFrameRef.current = requestAnimationFrame(loop);
@@ -121,23 +159,6 @@ const updateCanvas = (
     normalized_mouth,
   } = vectors;
   const [x, y] = position;
-
-  // Render generic circle cursor
-  // console.log(x);
-
-  // ctx.beginPath();
-  // ctx.arc(x, y, 10, 0, 2 * Math.PI);
-  // ctx.fillStyle = 'purple';
-  // ctx.fill();
-
-  // Render fancy joystick 'cursor'
-
-  drawJoystick(vector_normalized_circle, ctx, {
-    inputRadius: 1,
-    outputRadius: 50,
-    center: position,
-    stoppingRatio,
-  });
 
   drawSquareControl(vector_normalized_square, ctx, {
     inputDimensions: [1, 1],

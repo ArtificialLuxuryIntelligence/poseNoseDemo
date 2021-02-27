@@ -365,6 +365,40 @@ const updatePosition = (
   return [x_new, y_new];
 };
 
+const drawPrecisionCursor = (
+  coords,
+  vector,
+  precision_active,
+  options = {
+    outputRadius: 100,
+  },
+  ctx
+) => {
+  const [x, y] = coords;
+  const [v_x, v_y] = vector;
+
+  const { outputRadius } = options;
+  if (!precision_active) {
+    ctx.beginPath();
+    ctx.arc(x, y, outputRadius, 0, 2 * Math.PI);
+    ctx.fillStyle = 'blue';
+    ctx.fill();
+  } else {
+    ctx.beginPath();
+    ctx.arc(x, y, outputRadius, 0, 2 * Math.PI);
+    ctx.fillStyle = 'rgba(0,255,0,0.2)';
+    ctx.fill();
+    ctx.closePath();
+
+    let x_j = x - v_x * outputRadius;
+    let y_j = y - v_y * outputRadius;
+    ctx.beginPath();
+    ctx.arc(x_j, y_j, 5, 0, 2 * Math.PI);
+    ctx.fillStyle = 'red';
+    ctx.fill();
+  }
+};
+
 //helpers
 function getDimensions(prediction) {
   const topLeft = prediction.topLeft;
@@ -404,6 +438,7 @@ export {
   clearCanvas,
   drawCircleControl,
   drawSquareControl,
+  drawPrecisionCursor,
   drawBoundingFace,
   drawBoundingFace2,
   drawBoundingEye,

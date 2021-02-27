@@ -35,6 +35,10 @@ export default class NVDMesh extends VectorDetector {
       center,
       lipsLowerInner,
       lipsUpperInner,
+      rightEyeLower1,
+      rightEyeUpper1,
+      leftEyeLower1,
+      leftEyeUpper1,
       eyeDist,
     } = this.__getPredictionData(predictions[0]);
 
@@ -44,9 +48,18 @@ export default class NVDMesh extends VectorDetector {
       lipsUpperInner,
       eyeDist
     );
+
+    let eyeVectors = this.__getEyesClosedVectors(
+      rightEyeLower1,
+      rightEyeUpper1,
+      leftEyeLower1,
+      leftEyeUpper1,
+      eyeDist
+    );
     let vectors = {
       ...noseVectors,
       ...mouthVector,
+      ...eyeVectors,
     };
     let config = this.config;
 
@@ -64,13 +77,19 @@ export default class NVDMesh extends VectorDetector {
       lipsLowerInner,
       lipsUpperInner,
       rightEyeLower1,
+      rightEyeUpper1,
       leftEyeLower1,
+      leftEyeUpper1,
     } = prediction.annotations;
 
     lipsLowerInner = lipsLowerInner[5];
     lipsUpperInner = lipsUpperInner[5];
+    rightEyeLower1 = rightEyeLower1[4];
+    rightEyeUpper1 = rightEyeUpper1[4];
+    leftEyeLower1 = leftEyeLower1[4];
+    leftEyeUpper1 = leftEyeUpper1[4];
 
-    const eyeDist = distanceCoordinates(rightEyeLower1[4], leftEyeLower1[4]);
+    const eyeDist = distanceCoordinates(rightEyeLower1, leftEyeLower1);
     const nose = prediction.scaledMesh[4];
     return {
       topLeft,
@@ -81,6 +100,10 @@ export default class NVDMesh extends VectorDetector {
       nose,
       lipsLowerInner,
       lipsUpperInner,
+      rightEyeLower1,
+      rightEyeUpper1,
+      leftEyeLower1,
+      leftEyeUpper1,
       eyeDist,
     };
   }
@@ -89,5 +112,23 @@ export default class NVDMesh extends VectorDetector {
     let mouth_bounding = this.config.mouth_bounding;
     const normalized_mouth = this.__normalizeInRange(distance, mouth_bounding);
     return { normalized_mouth };
+  }
+  __getEyesClosedVectors(
+    rightEyeLower1,
+    rightEyeUpper1,
+    leftEyeLower1,
+    leftEyeUpper1,
+    eyeDist
+  ) {
+    let distance_r =
+      (distanceCoordinates(rightEyeLower1, rightEyeUpper1) / eyeDist) * 100; //distance normalized for z-dist
+    let eye_bounding = this.config.eye_bounding;
+    const normalized_eye_r = this.__normalizeInRange(distance_r, eye_bounding);
+    let distance_l =
+      (distanceCoordinates(leftEyeLower1, leftEyeUpper1) / eyeDist) * 100; //distance normalized for z-dist
+
+    const normalized_eye_l = this.__normalizeInRange(distance_l, eye_bounding);
+
+    return { normalized_eye_r, normalized_eye_l };
   }
 }

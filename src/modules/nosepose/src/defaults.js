@@ -7,6 +7,7 @@ const defaults = {
     central_bounding: { x: [-20, 20], y: [-30, 15] },
     outer_bounding: { x: [-50, 50], y: [-35, 15] },
     mouth_bounding: [0, 10],
+    eye_bounding: [25, 32],
   },
   interpolater: {
     fps: 15,

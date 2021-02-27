@@ -13,11 +13,11 @@ export default function PrecisionCursor({ outputRef, speed, stoppingRatio }) {
   const animationFrameRef = useRef(null);
 
   useEffect(() => {
-    let position;
+    let position = [0, 0];
     function spaceListener(e) {
       if (e.keyCode === 32) {
         e.preventDefault();
-        clickAtPosition(position, canvasRef.current);
+        // clickAtPosition(position, clicked, canvasRef.current);
       }
     }
     const animationLoop = () => {
@@ -27,6 +27,9 @@ export default function PrecisionCursor({ outputRef, speed, stoppingRatio }) {
       let canvasWidth = ctx.canvas.offsetWidth;
       let canvasHeight = ctx.canvas.offsetHeight;
       let canvasDimensions = [canvasWidth, canvasHeight];
+
+      // track clicks to prevent multiple clicks
+      let clicked = false;
 
       // Set initial cursor position
       let mouthWasOpen = false;
@@ -45,14 +48,30 @@ export default function PrecisionCursor({ outputRef, speed, stoppingRatio }) {
 
         let vectors = outputRef.current?.vectors;
 
-        // Mouth open
-        let mouth = outputRef?.current?.vectors.normalized_mouth === 1;
-
         if (vectors) {
           const {
             vector_normalized_circle,
             vector_normalized_square,
+            normalized_eye_l,
+            normalized_eye_r,
+            normalized_mouth,
           } = vectors;
+
+          // Mouth open
+          let mouth = normalized_mouth === 1;
+          // Eyes closed
+          let wink = normalized_eye_l < 0.3 || normalized_eye_r < 0.3;
+
+          if (wink) {
+            console.log('winky');
+            if (!clicked) {
+              clickAtPosition(position, canvasRef.current);
+              clicked = true;
+              setTimeout(() => {
+                clicked = false;
+              }, 200);
+            }
+          }
 
           const [x, y] = vector_normalized_square;
           let w = canvasRef.current.width;
@@ -61,7 +80,9 @@ export default function PrecisionCursor({ outputRef, speed, stoppingRatio }) {
           let x_j = c_x - (x * w) / 2;
           let y_j = c_y - (y * h) / 2;
 
-          // fix the position
+          position = [x_j, y_j];
+
+          // fix the position of cursor
           if (mouth && !mouthWasOpen) {
             mouthWasOpen = true;
             fixed_pos = [x_j, y_j];
@@ -77,6 +98,14 @@ export default function PrecisionCursor({ outputRef, speed, stoppingRatio }) {
           }
 
           if (mouth) {
+            //add extra vector for precision pointer
+            let [x_f, y_f] = fixed_pos;
+            let [v_x, v_y] = vector_normalized_circle;
+            let x_p = x_f - v_x * pointer_radius;
+            let y_p = y_f - v_y * pointer_radius;
+
+            position = [x_p, y_p];
+
             drawPrecisionCursor(
               fixed_pos,
               vector_normalized_circle,
@@ -93,20 +122,6 @@ export default function PrecisionCursor({ outputRef, speed, stoppingRatio }) {
               ctx
             );
           }
-
-          // ctx.arc(x_j, y_j, pointer_radius, 0, 2 * Math.PI);
-          // ctx.fillStyle = 'red';
-          // ctx.fill();
-
-          // position = []
-
-          // drawSquareControl(vector_normalized_square, ctx, {
-          //   inputDimensions: [1, 1],
-          //   outputDimensions: [ctx.canvas.width, ctx.canvas.height],
-          //   topLeft: [0, 0], // note: canvas is mirrored
-          //   pointer_radius: pointer_radius,
-          // });
-          // updateCanvas(position, vectors, stoppingRatio, pointer_radius, ctx);
         }
 
         animationFrameRef.current = requestAnimationFrame(loop);
@@ -175,5 +190,7 @@ const clickAtPosition = (position, canvas, mirrored = true) => {
     x = canvas.width - x;
   }
   let el = document.elementFromPoint(x, y);
-  el.click();
+  if (el) {
+    el.click();
+  }
 };

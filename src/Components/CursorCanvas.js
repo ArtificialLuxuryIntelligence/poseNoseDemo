@@ -44,9 +44,10 @@ export default function CursorCanvas({ outputRef, speed, stoppingRatio }) {
         let vector_circle = vectors?.vector_normalized_circle;
 
         // Mouth open
-        let mouth = outputRef.current.vectors.normalized_mouth === 1;
+        let mouth = outputRef?.current?.vectors.normalized_mouth === 1;
 
         if (vectors) {
+          // console.log(vectors.normalized_eye_l)
           position = updatePosition(
             vector_circle,
             position,
